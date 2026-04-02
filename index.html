@@ -845,12 +845,25 @@
                 min-width: 100%;
             }
         }
+/* ===== RESET ===== */
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+
     </style>
 </head>
 <body class="theme-ocean">
     <div class="container">
         <!-- Header -->
         <header>
+            <div id="intro">
+        <div class="intro-content">
+            <h1 class="intro-logo">TODAY TASK</h1>
+            <p class="intro-tagline">Plan • Focus • Achieve</p>
+            </div>
+            </div>
             <div class="header-top">
                 <div class="logo">TODAY TASK</div>
                 <div class="theme-selector">
@@ -886,7 +899,7 @@
 
         <!-- Contribution Graph -->
         <div class="graph-section">
-            <h2 class="graph-title">Your Contribution Activity (2024)</h2>
+            <h2 class="graph-title">Your Contribution Activity (2026)</h2>
             <div class="contribution-graph" id="contributionGraph"></div>
             <div class="legend">
                 <span style="color: var(--text-secondary); font-size: 0.9rem;">Less</span>
@@ -982,12 +995,8 @@
 
     <!-- Footer -->
     <footer>
-        <p>Made with ❤️ for productivity</p>
-        <div class="input-name-form">
-            <input type="text" id="userName" placeholder="Enter your name..." maxlength="50">
-            <button onclick="saveName()">Set Name</button>
-        </div>
-        <div class="user-name" id="userNameDisplay"></div>
+        <p>Made by ❤️ Rajyavardhan</p>
+        
     </footer>
 
     <!-- Add Section Modal -->
@@ -1295,7 +1304,22 @@
                 closeAddSectionModal();
             }
         });
+        window.addEventListener("load", () => {
+     const intro = document.getElementById("intro");
 
+     // 🔥 BODY SHOW (glitch fix)
+     document.body.style.visibility = "visible";
+
+     // 2 sec baad exit
+     setTimeout(() => {
+        intro.classList.add("hide");
+     }, 2000);
+
+     // remove after animation
+     setTimeout(() => {
+        intro.remove();
+     }, 2700);
+     });
         init();
     </script>
 </body>
