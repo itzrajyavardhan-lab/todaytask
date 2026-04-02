@@ -42,16 +42,20 @@
 
         /* Dark Theme */
         body.theme-dark {
-            --primary: #60a5fa;
-            --accent: #3b82f6;
-            --bg-primary: #1e293b;
-            --bg-secondary: #0f172a;
-            --bg-tertiary: #1e293b;
-            --text-primary: #f1f5f9;
-            --text-secondary: #cbd5e1;
-            --border-color: #334155;
-            background: linear-gradient(135deg, #0f172a 0%, #1a1f35 100%);
-        }
+        --primary: #001e4e;
+        --accent: #2563eb;
+
+        --bg-primary: #020617;      /* almost black */
+        --bg-secondary: #0f172a;    /* dark blue */
+        --bg-tertiary: #000000;     /* card bg */
+
+        --text-primary: #f9fafb;
+        --text-secondary: #9ca3af;
+
+        --border-color: #ffffff;
+
+        background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
+}
 
         /* Light Theme */
         body.theme-light {
@@ -851,18 +855,12 @@ html, body {
     padding: 0;
 }
 
-
     </style>
 </head>
 <body class="theme-ocean">
     <div class="container">
         <!-- Header -->
         <header>
-            <div id="intro">
-        <div class="intro-content">
-            <h1 class="intro-logo">TODAY TASK</h1>
-            <p class="intro-tagline">Plan • Focus • Achieve</p>
-            </div>
             </div>
             <div class="header-top">
                 <div class="logo">TODAY TASK</div>
@@ -963,33 +961,6 @@ html, body {
                     <button type="submit" class="add-btn">+ Add</button>
                 </form>
             </div>
-
-            <!-- Work Section -->
-            <div class="section">
-                <div class="section-header">
-                    <span class="section-icon">💼</span>
-                    <span class="section-title">Work</span>
-                    <span class="section-count" id="workCount">0/0</span>
-                </div>
-                <div class="tasks-list" id="workTasks"></div>
-                <form class="add-task-form" onsubmit="addTask(event, 'work')">
-                    <input 
-                        type="text" 
-                        class="add-task-input" 
-                        placeholder="Add a work task..." 
-                        id="workInput"
-                        autocomplete="off"
-                    >
-                    <button type="submit" class="add-btn">+ Add</button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Add Section Button -->
-        <div style="display: flex; justify-content: center; margin-bottom: 60px;">
-            <button class="add-section-btn" onclick="openAddSectionModal()" style="width: 300px; max-width: 100%;">
-                + Add New Section
-            </button>
         </div>
     </div>
 
