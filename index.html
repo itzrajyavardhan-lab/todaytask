@@ -3,1295 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TODAY TASK - Track Your Progress</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        /* Theme Variables */
-        :root {
-            --primary: #0ea5e9;
-            --accent: #06b6d4;
-            --success-dark: #0d8659;
-            --success-light: #86efac;
-            --danger: #ef4444;
-            --bg-primary: #ffffff;
-            --bg-secondary: #f0f9ff;
-            --bg-tertiary: #e0f2fe;
-            --text-primary: #0c3a5d;
-            --text-secondary: #475569;
-            --border-color: #bae6fd;
-            --transition: 0.3s ease;
-        }
-
-        /* Ocean Theme (Default) */
-        body.theme-ocean {
-            --primary: #0ea5e9;
-            --accent: #06b6d4;
-            --bg-primary: #ffffff;
-            --bg-secondary: #f0f9ff;
-            --bg-tertiary: #e0f2fe;
-            --text-primary: #0c3a5d;
-            --text-secondary: #475569;
-            --border-color: #bae6fd;
-            background: linear-gradient(135deg, #e0f2fe 0%, #cffafe 100%);
-        }
-
-        /* Dark Theme */
-        body.theme-dark {
-        --primary: #001e4e;
-        --accent: #2563eb;
-
-        --bg-primary: #020617;      /* almost black */
-        --bg-secondary: #0f172a;    /* dark blue */
-        --bg-tertiary: #000000;     /* card bg */
-
-        --text-primary: #f9fafb;
-        --text-secondary: #9ca3af;
-
-        --border-color: #ffffff;
-
-        background: linear-gradient(135deg, #020617 0%, #0f172a 100%);
-}
-
-        /* Light Theme */
-        body.theme-light {
-            --primary: #6366f1;
-            --accent: #4f46e5;
-            --bg-primary: #ffffff;
-            --bg-secondary: #f5f3ff;
-            --bg-tertiary: #ede9fe;
-            --text-primary: #4c1d95;
-            --text-secondary: #6b7280;
-            --border-color: #ddd6fe;
-            background: linear-gradient(135deg, #faf5ff 0%, #f3e8ff 100%);
-        }
-
-        /* Forest Theme */
-        body.theme-forest {
-            --primary: #10b981;
-            --accent: #059669;
-            --bg-primary: #ffffff;
-            --bg-secondary: #f0fdf4;
-            --bg-tertiary: #dcfce7;
-            --text-primary: #1b4332;
-            --text-secondary: #4b5563;
-            --border-color: #a7f3d0;
-            background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-        }
-
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            color: var(--text-primary);
-            min-height: 100vh;
-            padding: 20px;
-            transition: background var(--transition);
-            animation: pageSlideIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
-        }
-
-        @keyframes pageSlideIn {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* Header */
-        header {
-            text-align: center;
-            margin-bottom: 40px;
-            animation: slideDown 0.6s ease-out;
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .header-top {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-            flex-wrap: wrap;
-            gap: 20px;
-        }
-
-        .logo {
-            font-size: 2rem;
-            font-weight: 800;
-            background: linear-gradient(135deg, var(--primary), var(--accent));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            letter-spacing: 2px;
-        }
-
-        .theme-selector {
-            display: flex;
-            gap: 8px;
-            background: var(--bg-primary);
-            padding: 8px;
-            border-radius: 12px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-            border: 1px solid var(--border-color);
-        }
-
-        .theme-btn {
-            padding: 8px 14px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 0.85rem;
-            transition: all var(--transition);
-            background: transparent;
-            color: var(--text-secondary);
-        }
-
-        .theme-btn.active {
-            background: var(--primary);
-            color: white;
-            transform: scale(1.05);
-        }
-
-        .theme-btn:hover:not(.active) {
-            background: var(--bg-secondary);
-        }
-
-        h1 {
-            font-size: 2.8rem;
-            font-weight: 800;
-            color: var(--text-primary);
-            margin: 20px 0 10px;
-            letter-spacing: 1px;
-        }
-
-        .header-subtitle {
-            color: var(--text-secondary);
-            font-size: 1.05rem;
-            margin-bottom: 30px;
-        }
-
-        /* Add Section Modal */
-        .modal {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.5);
-            z-index: 1000;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.3s ease;
-        }
-
-        .modal.active {
-            display: flex;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        .modal-content {
-            background: var(--bg-primary);
-            border-radius: 16px;
-            padding: 30px;
-            max-width: 400px;
-            width: 90%;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
-            animation: modalSlideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
-            border: 1px solid var(--border-color);
-        }
-
-        @keyframes modalSlideUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .modal-header {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 20px;
-            color: var(--text-primary);
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: var(--text-primary);
-            font-weight: 600;
-            font-size: 0.95rem;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 0.95rem;
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            transition: all var(--transition);
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: var(--bg-primary);
-            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
-        }
-
-        .icon-picker {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .icon-option {
-            font-size: 2rem;
-            cursor: pointer;
-            padding: 10px;
-            border-radius: 8px;
-            transition: all var(--transition);
-            border: 2px solid transparent;
-        }
-
-        .icon-option:hover {
-            transform: scale(1.1);
-        }
-
-        .icon-option.selected {
-            border-color: var(--primary);
-            background: var(--bg-secondary);
-        }
-
-        .modal-actions {
-            display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
-        .btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all var(--transition);
-            font-size: 0.95rem;
-        }
-
-        .btn-primary {
-            background: var(--primary);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: var(--accent);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
-        }
-
-        .btn-secondary {
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-secondary:hover {
-            background: var(--bg-tertiary);
-        }
-
-        /* Stats Bar */
-        .stats-bar {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
-            margin-bottom: 40px;
-            animation: fadeIn 0.8s ease-out 0.2s both;
-        }
-
-        .stat-card {
-            background: var(--bg-primary);
-            border-radius: 12px;
-            padding: 20px;
-            text-align: center;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            border: 1px solid var(--border-color);
-            transition: all var(--transition);
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .stat-label {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            margin-top: 8px;
-        }
-
-        /* Contribution Graph */
-        .graph-section {
-            background: var(--bg-primary);
-            border-radius: 16px;
-            padding: 30px;
-            margin-bottom: 40px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            border: 1px solid var(--border-color);
-            animation: fadeIn 0.8s ease-out 0.3s both;
-        }
-
-        .graph-title {
-            font-size: 1.3rem;
-            font-weight: 600;
-            margin-bottom: 20px;
-            color: var(--text-primary);
-        }
-
-        .contribution-graph {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(22px, 1fr));
-            gap: 3px;
-            margin-bottom: 20px;
-        }
-
-        .contribution-day {
-            aspect-ratio: 1;
-            border-radius: 4px;
-            cursor: pointer;
-            transition: all var(--transition);
-            border: 1px solid rgba(0, 0, 0, 0.05);
-            position: relative;
-            background: var(--bg-secondary);
-        }
-
-        .contribution-day:hover {
-            transform: scale(1.2);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-
-        .contribution-day.empty {
-            background: var(--bg-tertiary);
-        }
-
-        .contribution-day.low {
-            background: var(--success-light);
-            opacity: 0.4;
-        }
-
-        .contribution-day.medium {
-            background: var(--success-light);
-            opacity: 0.7;
-        }
-
-        .contribution-day.high {
-            background: var(--success-dark);
-        }
-
-        .contribution-day.none {
-            background: var(--danger);
-        }
-
-        .tooltip {
-            position: absolute;
-            bottom: 110%;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.9);
-            color: white;
-            padding: 8px 12px;
-            border-radius: 6px;
-            font-size: 0.85rem;
-            white-space: nowrap;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity var(--transition);
-            z-index: 10;
-        }
-
-        .contribution-day:hover .tooltip {
-            opacity: 1;
-        }
-
-        .legend {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 15px;
-            font-size: 0.9rem;
-            flex-wrap: wrap;
-            margin-top: 20px;
-            padding-top: 20px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .legend-box {
-            width: 16px;
-            height: 16px;
-            border-radius: 3px;
-        }
-
-        /* Task Sections */
-        .sections-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-            gap: 30px;
-            animation: fadeIn 0.8s ease-out 0.4s both;
-            margin-bottom: 40px;
-        }
-
-        .section {
-            background: var(--bg-primary);
-            border-radius: 16px;
-            padding: 25px;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            border: 1px solid var(--border-color);
-            transition: all var(--transition);
-        }
-
-        .section:hover {
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-        }
-
-        .section-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid var(--border-color);
-        }
-
-        .section-icon {
-            font-size: 1.8rem;
-        }
-
-        .section-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: var(--text-primary);
-        }
-
-        .section-count {
-            margin-left: auto;
-            background: var(--bg-secondary);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: var(--text-secondary);
-            font-weight: 500;
-        }
-
-        .section-delete-btn {
-            padding: 6px 12px;
-            background: var(--danger);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-size: 0.8rem;
-            transition: all var(--transition);
-            margin-left: auto;
-        }
-
-        .section-delete-btn:hover {
-            background: #dc2626;
-        }
-
-        /* Tasks */
-        .tasks-list {
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            margin-bottom: 15px;
-        }
-
-        .task-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px;
-            background: var(--bg-secondary);
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            transition: all var(--transition);
-            cursor: pointer;
-            animation: slideInLeft 0.3s ease-out;
-        }
-
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        .task-item:hover {
-            background: var(--bg-tertiary);
-            border-color: var(--primary);
-        }
-
-        .task-item.completed {
-            opacity: 0.6;
-        }
-
-        .task-checkbox {
-            width: 20px;
-            height: 20px;
-            border: 2px solid var(--border-color);
-            border-radius: 4px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all var(--transition);
-            background: var(--bg-primary);
-            flex-shrink: 0;
-            font-weight: bold;
-            color: white;
-        }
-
-        .task-item:hover .task-checkbox {
-            border-color: var(--primary);
-            background: var(--primary);
-        }
-
-        .task-item.completed .task-checkbox {
-            background: var(--success-dark);
-            border-color: var(--success-dark);
-            color: white;
-            animation: scaleCheck 0.3s ease-out;
-        }
-
-        @keyframes scaleCheck {
-            0% { transform: scale(0.8); }
-            50% { transform: scale(1.2); }
-            100% { transform: scale(1); }
-        }
-
-        .task-text {
-            flex: 1;
-            color: var(--text-primary);
-            font-size: 0.95rem;
-            transition: all var(--transition);
-        }
-
-        .task-item.completed .task-text {
-            text-decoration: line-through;
-            color: var(--text-secondary);
-        }
-
-        .delete-btn {
-            width: 24px;
-            height: 24px;
-            border: none;
-            background: transparent;
-            color: var(--text-secondary);
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all var(--transition);
-            font-size: 1rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .delete-btn:hover {
-            background: var(--danger);
-            color: white;
-        }
-
-        /* Add Task Form */
-        .add-task-form {
-            display: flex;
-            gap: 8px;
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid var(--border-color);
-        }
-
-        .add-task-input {
-            flex: 1;
-            padding: 10px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 8px;
-            font-size: 0.9rem;
-            transition: all var(--transition);
-            background: var(--bg-secondary);
-            color: var(--text-primary);
-        }
-
-        .add-task-input::placeholder {
-            color: var(--text-secondary);
-        }
-
-        .add-task-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            background: var(--bg-primary);
-            box-shadow: 0 0 0 3px rgba(14, 165, 233, 0.1);
-        }
-
-        .add-btn {
-            padding: 10px 16px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all var(--transition);
-            font-size: 0.9rem;
-        }
-
-        .add-btn:hover {
-            background: var(--accent);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 8px rgba(14, 165, 233, 0.3);
-        }
-
-        .add-btn:active {
-            transform: translateY(0);
-        }
-
-        /* Add Section Button */
-        .add-section-btn {
-            padding: 20px;
-            background: var(--bg-primary);
-            border: 2px dashed var(--border-color);
-            border-radius: 16px;
-            cursor: pointer;
-            transition: all var(--transition);
-            text-align: center;
-            color: var(--text-secondary);
-            font-weight: 600;
-            font-size: 1.1rem;
-            height: fit-content;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            min-height: 200px;
-        }
-
-        .add-section-btn:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            background: var(--bg-secondary);
-        }
-
-        /* Footer */
-        footer {
-            text-align: center;
-            padding: 40px 20px 20px;
-            color: var(--text-secondary);
-            border-top: 1px solid var(--border-color);
-            margin-top: 60px;
-            animation: fadeIn 0.8s ease-out 0.6s both;
-        }
-
-        .user-name {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-top: 10px;
-        }
-
-        .input-name-form {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin-top: 15px;
-            flex-wrap: wrap;
-        }
-
-        .input-name-form input {
-            padding: 8px 12px;
-            border: 1px solid var(--border-color);
-            border-radius: 6px;
-            background: var(--bg-primary);
-            color: var(--text-primary);
-            min-width: 200px;
-        }
-
-        .input-name-form button {
-            padding: 8px 16px;
-            background: var(--primary);
-            color: white;
-            border: none;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all var(--transition);
-        }
-
-        .input-name-form button:hover {
-            background: var(--accent);
-        }
-
-        /* Empty state */
-        .empty-state {
-            text-align: center;
-            padding: 20px;
-            color: var(--text-secondary);
-        }
-
-        .empty-state-icon {
-            font-size: 2rem;
-            margin-bottom: 10px;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            h1 {
-                font-size: 2rem;
-            }
-
-            .header-top {
-                flex-direction: column;
-                align-items: center;
-            }
-
-            .stats-bar {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .sections-container {
-                grid-template-columns: 1fr;
-            }
-
-            .contribution-graph {
-                grid-template-columns: repeat(auto-fit, minmax(20px, 1fr));
-            }
-        }
-
-        @media (max-width: 480px) {
-            body {
-                padding: 12px;
-            }
-
-            h1 {
-                font-size: 1.5rem;
-            }
-
-            .stats-bar {
-                grid-template-columns: repeat(2, 1fr);
-                gap: 10px;
-            }
-
-            .stat-card {
-                padding: 15px;
-            }
-
-            .add-task-form {
-                flex-direction: column;
-            }
-
-            .add-task-input, .add-btn {
-                width: 100%;
-            }
-
-            .input-name-form input {
-                min-width: 100%;
-            }
-        }
-/* ===== RESET ===== */
-html, body {
-    margin: 0;
-    padding: 0;
-}
-
-    </style>
+    <title>TODAY TASK - Personal Task Manager</title>
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="theme-ocean">
-    <div class="container">
-        <!-- Header -->
-        <header>
-            </div>
-            <div class="header-top">
-                <div class="logo">TODAY TASK</div>
-                <div class="theme-selector">
-                    <button class="theme-btn active" onclick="switchTheme('ocean')">Ocean</button>
-                    <button class="theme-btn" onclick="switchTheme('dark')">Dark</button>
-                    <button class="theme-btn" onclick="switchTheme('light')">Light</button>
-                    <button class="theme-btn" onclick="switchTheme('forest')">Forest</button>
-                </div>
-            </div>
-            <h1>TODAY TASK</h1>
-            <p class="header-subtitle">Track your daily progress and stay productive</p>
-        </header>
+<body>
+    <!-- Auth Screen -->
+    <div class="auth-container" id="authContainer">
+        <div class="auth-card">
+            <h2 class="auth-title">TODAY TASK</h2>
+            <p class="auth-subtitle">Your Personal Task Manager</p>
 
-        <!-- Stats -->
-        <div class="stats-bar">
-            <div class="stat-card">
-                <div class="stat-value" id="totalTasks">0</div>
-                <div class="stat-label">Total Tasks</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="completedTasks">0</div>
-                <div class="stat-label">Completed</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="completionRate">0%</div>
-                <div class="stat-label">Progress</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="streak">0</div>
-                <div class="stat-label">Day Streak</div>
-            </div>
-        </div>
-
-        <!-- Contribution Graph -->
-        <div class="graph-section">
-            <h2 class="graph-title">Your Contribution Activity (2026)</h2>
-            <div class="contribution-graph" id="contributionGraph"></div>
-            <div class="legend">
-                <span style="color: var(--text-secondary); font-size: 0.9rem;">Less</span>
-                <div class="legend-item">
-                    <div class="legend-box" style="background: var(--bg-tertiary);"></div>
+            <!-- Sign Up Form -->
+            <div id="signupForm">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="signupName" placeholder="Enter your full name" autocomplete="off">
                 </div>
-                <div class="legend-item">
-                    <div class="legend-box" style="background: var(--success-light); opacity: 0.4;"></div>
+                <div class="form-group">
+                    <label>Email or Username</label>
+                    <input type="text" id="signupEmail" placeholder="Choose your username" autocomplete="off">
                 </div>
-                <div class="legend-item">
-                    <div class="legend-box" style="background: var(--success-light); opacity: 0.7;"></div>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="signupPassword" placeholder="Create a strong password" autocomplete="off">
                 </div>
-                <div class="legend-item">
-                    <div class="legend-box" style="background: var(--success-dark);"></div>
+                <button class="liquid-btn" onclick="handleSignup()">SIGN UP</button>
+                <div class="toggle-form">
+                    Already have an account? <a onclick="toggleForm()">Sign In</a>
                 </div>
-                <div class="legend-item">
-                    <div class="legend-box" style="background: var(--danger);"></div>
-                </div>
-                <span style="color: var(--text-secondary); font-size: 0.9rem;">More / No Tasks</span>
-            </div>
-        </div>
-
-        <!-- Task Sections -->
-        <div class="sections-container" id="sectionsContainer">
-            <!-- Study Section -->
-            <div class="section">
-                <div class="section-header">
-                    <span class="section-icon">📚</span>
-                    <span class="section-title">Study</span>
-                    <span class="section-count" id="studyCount">0/0</span>
-                </div>
-                <div class="tasks-list" id="studyTasks"></div>
-                <form class="add-task-form" onsubmit="addTask(event, 'study')">
-                    <input 
-                        type="text" 
-                        class="add-task-input" 
-                        placeholder="Add a study task..." 
-                        id="studyInput"
-                        autocomplete="off"
-                    >
-                    <button type="submit" class="add-btn">+ Add</button>
-                </form>
             </div>
 
-            <!-- Coding Section -->
-            <div class="section">
-                <div class="section-header">
-                    <span class="section-icon">💻</span>
-                    <span class="section-title">Coding</span>
-                    <span class="section-count" id="codingCount">0/0</span>
+            <!-- Sign In Form -->
+            <div id="signinForm" style="display: none;">
+                <div class="form-group">
+                    <label>Email or Username</label>
+                    <input type="text" id="signinEmail" placeholder="Enter your username" autocomplete="off">
                 </div>
-                <div class="tasks-list" id="codingTasks"></div>
-                <form class="add-task-form" onsubmit="addTask(event, 'coding')">
-                    <input 
-                        type="text" 
-                        class="add-task-input" 
-                        placeholder="Add a coding task..." 
-                        id="codingInput"
-                        autocomplete="off"
-                    >
-                    <button type="submit" class="add-btn">+ Add</button>
-                </form>
+                <div class="form-group">
+                    <label>Password</label>
+                    <input type="password" id="signinPassword" placeholder="Enter your password" autocomplete="off">
+                </div>
+                <button class="liquid-btn" onclick="handleSignin()">SIGN IN</button>
+                <div class="toggle-form">
+                    Don't have an account? <a onclick="toggleForm()">Sign Up</a>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <footer>
-        <p>Made by ❤️ Rajyavardhan</p>
-        
-    </footer>
+    <!-- Main App -->
+    <div class="app-container" id="appContainer">
+        <div class="app-wrapper">
+            <!-- Header -->
+            <header>
+                <div class="logo-section">
+                    <div class="logo">TODAY TASK</div>
+                </div>
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <span class="user-name" id="displayUserName">User</span>
+                    <button class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
+                </div>
+            </header>
 
-    <!-- Add Section Modal -->
-    <div class="modal" id="addSectionModal">
-        <div class="modal-content">
-            <div class="modal-header">Create New Section</div>
-            <div class="form-group">
-                <label>Section Name</label>
-                <input type="text" id="sectionName" placeholder="e.g., Exercise, Reading, etc." autocomplete="off">
-            </div>
-            <div class="form-group">
-                <label>Choose Icon</label>
-                <div class="icon-picker">
-                    <div class="icon-option" onclick="selectIcon(this, '📚')">📚</div>
-                    <div class="icon-option" onclick="selectIcon(this, '💻')">💻</div>
-                    <div class="icon-option" onclick="selectIcon(this, '💼')">💼</div>
-                    <div class="icon-option" onclick="selectIcon(this, '🎨')">🎨</div>
-                    <div class="icon-option" onclick="selectIcon(this, '🏋️')">🏋️</div>
-                    <div class="icon-option" onclick="selectIcon(this, '🎵')">🎵</div>
-                    <div class="icon-option" onclick="selectIcon(this, '⚽')">⚽</div>
-                    <div class="icon-option" onclick="selectIcon(this, '🍳')">🍳</div>
-                    <div class="icon-option" onclick="selectIcon(this, '📖')">📖</div>
-                    <div class="icon-option" onclick="selectIcon(this, '🚀')">🚀</div>
-                    <div class="icon-option" onclick="selectIcon(this, '✏️')">✏️</div>
-                    <div class="icon-option" onclick="selectIcon(this, '🎯')">🎯</div>
+            <!-- Stats -->
+            <div class="stats-bar">
+                <div class="stat-card">
+                    <div class="stat-value" id="totalTasks">0</div>
+                    <div class="stat-label">Total Tasks</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="completedTasks">0</div>
+                    <div class="stat-label">Completed</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="completionRate">0%</div>
+                    <div class="stat-label">Progress</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="streak">0</div>
+                    <div class="stat-label">Day Streak</div>
                 </div>
             </div>
+
+            <!-- Contribution Graph -->
+            <div class="graph-section">
+                <h2 class="graph-title">📊 Your Activity This Year</h2>
+                <div class="contribution-graph" id="contributionGraph"></div>
+                <div class="legend">
+                    <span style="color: #475569; font-size: 0.9rem;">Less</span>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: rgba(255, 255, 255, 0.15);"></div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: #86efac; opacity: 0.4;"></div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: #86efac; opacity: 0.7;"></div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: #0d8659;"></div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: #ef4444;"></div>
+                    </div>
+                    <span style="color: #475569; font-size: 0.9rem;">More / No Tasks</span>
+                </div>
+            </div>
+
+            <!-- Task Sections -->
+            <div class="sections-container" id="sectionsContainer"></div>
+
+            <!-- Add Section Button -->
+            <div style="display: flex; justify-content: center; margin-bottom: 60px;">
+                <button class="add-section-btn" onclick="openAddSectionModal()" style="width: 300px; max-width: 100%;">
+                    ➕ Add New Section
+                </button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer>
+            <p>📅 Made with ❤️ for productivity</p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">Your data is saved locally and never shared</p>
+        </footer>
+    </div>
+
+    <!-- Custom Popup Modal -->
+    <div class="custom-modal" id="addSectionModal">
+        <div class="modal-overlay" onclick="closeAddSectionModal()"></div>
+        <div class="modal-popup">
+            <div class="modal-header">
+                <h3 class="modal-title">✨ Create New Section</h3>
+                <button class="modal-close" onclick="closeAddSectionModal()">✕</button>
+            </div>
+            
+            <div class="modal-content">
+                <div class="form-group">
+                    <label>Section Name</label>
+                    <input type="text" id="sectionName" placeholder="e.g., Exercise, Reading, etc." autocomplete="off">
+                </div>
+
+                <div class="form-group">
+                    <label>Choose Icon</label>
+                    <div class="icon-picker">
+                        <div class="icon-option" onclick="selectIcon(this, '📚')">📚</div>
+                        <div class="icon-option" onclick="selectIcon(this, '💻')">💻</div>
+                        <div class="icon-option" onclick="selectIcon(this, '💼')">💼</div>
+                        <div class="icon-option" onclick="selectIcon(this, '🎨')">🎨</div>
+                        <div class="icon-option" onclick="selectIcon(this, '🏋️')">🏋️</div>
+                        <div class="icon-option" onclick="selectIcon(this, '🎵')">🎵</div>
+                        <div class="icon-option" onclick="selectIcon(this, '⚽')">⚽</div>
+                        <div class="icon-option" onclick="selectIcon(this, '🍳')">🍳</div>
+                        <div class="icon-option" onclick="selectIcon(this, '📖')">📖</div>
+                        <div class="icon-option" onclick="selectIcon(this, '🚀')">🚀</div>
+                        <div class="icon-option" onclick="selectIcon(this, '✏️')">✏️</div>
+                        <div class="icon-option" onclick="selectIcon(this, '🎯')">🎯</div>
+                    </div>
+                </div>
+            </div>
+
             <div class="modal-actions">
-                <button class="btn btn-primary" onclick="createSection()">Create</button>
-                <button class="btn btn-secondary" onclick="closeAddSectionModal()">Cancel</button>
+                <button class="modal-btn modal-btn-primary" onclick="createSection()">Create</button>
+                <button class="modal-btn modal-btn-secondary" onclick="closeAddSectionModal()">Cancel</button>
             </div>
         </div>
     </div>
 
-    <script>
-        let tasks = {
-            study: [],
-            coding: [],
-            work: []
-        };
+    <!-- Custom Alert/Confirm Modal -->
+    <div class="custom-modal" id="alertModal">
+        <div class="modal-overlay" onclick="closeAlert()"></div>
+        <div class="alert-popup">
+            <div class="alert-content">
+                <p id="alertMessage"></p>
+            </div>
+            <div class="alert-actions">
+                <button class="alert-btn" id="alertConfirmBtn" onclick="confirmAlert()">OK</button>
+                <button class="alert-btn" id="alertCancelBtn" style="display: none;" onclick="closeAlert()">Cancel</button>
+            </div>
+        </div>
+    </div>
 
-        let sections = ['study', 'coding', 'work'];
-        let sectionIcons = { study: '📚', coding: '💻', work: '💼' };
-        let sectionNames = { study: 'Study', coding: 'Coding', work: 'Work' };
-        let selectedIcon = '📚';
-
-        function init() {
-            loadFromLocalStorage();
-            switchTheme(localStorage.getItem('theme') || 'ocean');
-            loadUserName();
-            renderAll();
-            generateContributionGraph();
-            
-            if (tasks.study.length === 0) {
-                tasks.study = [
-                    { id: 1, text: 'Read textbook Chapter 5', completed: false },
-                    { id: 2, text: 'Complete math homework', completed: false },
-                    { id: 3, text: 'Review notes', completed: true }
-                ];
-                tasks.coding = [
-                    { id: 4, text: 'Debug login feature', completed: false },
-                    { id: 5, text: 'Write API documentation', completed: true },
-                    { id: 6, text: 'Refactor authentication code', completed: false }
-                ];
-                tasks.work = [
-                    { id: 7, text: 'Attend team meeting', completed: true },
-                    { id: 8, text: 'Submit report', completed: false },
-                    { id: 9, text: 'Review colleague feedback', completed: false }
-                ];
-                saveToLocalStorage();
-                renderAll();
-                generateContributionGraph();
-            }
-        }
-
-        function switchTheme(theme) {
-            document.body.className = 'theme-' + theme;
-            document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
-            document.querySelector(`[onclick="switchTheme('${theme}')"]`).classList.add('active');
-            localStorage.setItem('theme', theme);
-        }
-
-        function openAddSectionModal() {
-            document.getElementById('addSectionModal').classList.add('active');
-            selectedIcon = '📚';
-            document.getElementById('sectionName').value = '';
-            document.querySelectorAll('.icon-option').forEach(opt => opt.classList.remove('selected'));
-            document.querySelectorAll('.icon-option')[0].classList.add('selected');
-        }
-
-        function closeAddSectionModal() {
-            document.getElementById('addSectionModal').classList.remove('active');
-        }
-
-        function selectIcon(element, icon) {
-            document.querySelectorAll('.icon-option').forEach(opt => opt.classList.remove('selected'));
-            element.classList.add('selected');
-            selectedIcon = icon;
-        }
-
-        function createSection() {
-            const name = document.getElementById('sectionName').value.trim();
-            if (!name) return alert('Please enter a section name');
-
-            const id = name.toLowerCase().replace(/\s+/g, '_');
-            if (sections.includes(id)) return alert('Section already exists');
-
-            sections.push(id);
-            sectionNames[id] = name;
-            sectionIcons[id] = selectedIcon;
-            tasks[id] = [];
-
-            saveToLocalStorage();
-            renderAll();
-            generateContributionGraph();
-            closeAddSectionModal();
-        }
-
-        function addTask(e, section) {
-            e.preventDefault();
-            const input = document.getElementById(section + 'Input');
-            const text = input.value.trim();
-
-            if (!text) return;
-
-            const id = Date.now();
-            tasks[section].push({ id, text, completed: false });
-            input.value = '';
-
-            saveToLocalStorage();
-            renderAll();
-            generateContributionGraph();
-        }
-
-        function toggleTask(section, id) {
-            const task = tasks[section].find(t => t.id === id);
-            if (task) {
-                task.completed = !task.completed;
-                saveToLocalStorage();
-                renderAll();
-                generateContributionGraph();
-            }
-        }
-
-        function deleteTask(section, id) {
-            tasks[section] = tasks[section].filter(t => t.id !== id);
-            saveToLocalStorage();
-            renderAll();
-            generateContributionGraph();
-        }
-
-        function renderSection(section) {
-            const container = document.getElementById(section + 'Tasks');
-            const count = document.getElementById(section + 'Count');
-            const taskList = tasks[section];
-
-            if (!container) return;
-
-            const completed = taskList.filter(t => t.completed).length;
-            count.textContent = `${completed}/${taskList.length}`;
-
-            if (taskList.length === 0) {
-                container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">✨</div><p>No tasks yet</p></div>';
-                return;
-            }
-
-            container.innerHTML = taskList.map(task => `
-                <div class="task-item ${task.completed ? 'completed' : ''}">
-                    <div class="task-checkbox" onclick="toggleTask('${section}', ${task.id})">
-                        ${task.completed ? '✓' : ''}
-                    </div>
-                    <span class="task-text">${escapeHtml(task.text)}</span>
-                    <button type="button" class="delete-btn" onclick="deleteTask('${section}', ${task.id})">✕</button>
-                </div>
-            `).join('');
-        }
-
-        function renderAll() {
-            const container = document.getElementById('sectionsContainer');
-            const defaultSections = ['study', 'coding', 'work'];
-            
-            // Keep default sections
-            defaultSections.forEach(section => {
-                const elem = document.getElementById(section + 'Tasks');
-                if (elem) renderSection(section);
-            });
-
-            // Render custom sections
-            sections.filter(s => !defaultSections.includes(s)).forEach(section => {
-                const count = document.getElementById(section + 'Count');
-                const taskList = tasks[section];
-                const completed = taskList.filter(t => t.completed).length;
-                if (count) count.textContent = `${completed}/${taskList.length}`;
-                renderSection(section);
-            });
-
-            updateStats();
-        }
-
-        function updateStats() {
-            const allTasks = Object.keys(tasks).flatMap(section => tasks[section]);
-            const completed = allTasks.filter(t => t.completed).length;
-            const total = allTasks.length;
-            const rate = total === 0 ? 0 : Math.round((completed / total) * 100);
-
-            document.getElementById('totalTasks').textContent = total;
-            document.getElementById('completedTasks').textContent = completed;
-            document.getElementById('completionRate').textContent = rate + '%';
-            document.getElementById('streak').textContent = completed > 0 ? 1 : 0;
-        }
-
-        function generateContributionGraph() {
-            const graph = document.getElementById('contributionGraph');
-            const today = new Date();
-            const startDate = new Date(today.getFullYear(), 0, 1);
-            const days = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
-
-            const dailyStats = {};
-
-            for (let i = 0; i < days; i++) {
-                const date = new Date(startDate);
-                date.setDate(date.getDate() + i);
-                const dateStr = date.toDateString();
-                dailyStats[dateStr] = { completed: 0, total: 0 };
-            }
-
-            const todayStr = today.toDateString();
-            const allTasks = Object.keys(tasks).flatMap(section => tasks[section]);
-            dailyStats[todayStr] = {
-                completed: allTasks.filter(t => t.completed).length,
-                total: allTasks.length
-            };
-
-            graph.innerHTML = Object.entries(dailyStats).map(([date, stats]) => {
-                let level = 'empty';
-                if (stats.total > 0) {
-                    const rate = stats.completed / stats.total;
-                    if (rate === 0) {
-                        level = 'none';
-                    } else if (rate < 0.33) {
-                        level = 'low';
-                    } else if (rate < 0.66) {
-                        level = 'medium';
-                    } else {
-                        level = 'high';
-                    }
-                }
-
-                const dateObj = new Date(date);
-                const formatted = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-
-                return `
-                    <div class="contribution-day ${level}">
-                        <div class="tooltip">${formatted} - ${stats.completed}/${stats.total}</div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function saveName() {
-            const name = document.getElementById('userName').value.trim();
-            if (name) {
-                localStorage.setItem('userName', name);
-                loadUserName();
-            }
-        }
-
-        function loadUserName() {
-            const name = localStorage.getItem('userName') || '';
-            document.getElementById('userName').value = name;
-            if (name) {
-                document.getElementById('userNameDisplay').textContent = `👤 ${name}`;
-            }
-        }
-
-        function saveToLocalStorage() {
-            localStorage.setItem('todayTasks', JSON.stringify({ tasks, sections, sectionNames, sectionIcons }));
-        }
-
-        function loadFromLocalStorage() {
-            const saved = localStorage.getItem('todayTasks');
-            if (saved) {
-                const data = JSON.parse(saved);
-                tasks = data.tasks || tasks;
-                sections = data.sections || sections;
-                sectionNames = data.sectionNames || sectionNames;
-                sectionIcons = data.sectionIcons || sectionIcons;
-            }
-        }
-
-        function escapeHtml(text) {
-            const map = {
-                '&': '&amp;',
-                '<': '&lt;',
-                '>': '&gt;',
-                '"': '&quot;',
-                "'": '&#039;'
-            };
-            return text.replace(/[&<>"']/g, m => map[m]);
-        }
-
-        document.addEventListener('click', (e) => {
-            const modal = document.getElementById('addSectionModal');
-            if (e.target === modal) {
-                closeAddSectionModal();
-            }
-        });
-        window.addEventListener("load", () => {
-     const intro = document.getElementById("intro");
-
-     // 🔥 BODY SHOW (glitch fix)
-     document.body.style.visibility = "visible";
-
-     // 2 sec baad exit
-     setTimeout(() => {
-        intro.classList.add("hide");
-     }, 2000);
-
-     // remove after animation
-     setTimeout(() => {
-        intro.remove();
-     }, 2700);
-     });
-        init();
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
