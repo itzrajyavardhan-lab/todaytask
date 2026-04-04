@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,15 +9,6 @@
 <body>
     <!-- Auth Screen -->
     <div class="auth-container" id="authContainer">
-        <!-- Theme Toggle on Auth Screen -->
-        <button class="theme-toggle" id="themeToggleAuth" onclick="toggleTheme()" title="Toggle Dark Mode">
-            <div class="toggle-track">
-                <span class="toggle-icon sun">☀️</span>
-                <span class="toggle-icon moon">🌙</span>
-                <div class="toggle-thumb"></div>
-            </div>
-        </button>
-
         <div class="auth-card">
             <h2 class="auth-title">TODAY TASK</h2>
             <p class="auth-subtitle">Your Personal Task Manager</p>
@@ -29,14 +20,13 @@
                     <input type="text" id="signupName" placeholder="Enter your full name" autocomplete="off">
                 </div>
                 <div class="form-group">
-                    <label>Username</label>
+                    <label>Email or Username</label>
                     <input type="text" id="signupEmail" placeholder="Choose your username" autocomplete="off">
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" id="signupPassword" placeholder="Create a strong password (min 4 chars)" autocomplete="off">
+                    <input type="password" id="signupPassword" placeholder="Create a strong password" autocomplete="off">
                 </div>
-                <div class="error-msg" id="signupError"></div>
                 <button class="liquid-btn" onclick="handleSignup()">SIGN UP</button>
                 <div class="toggle-form">
                     Already have an account? <a onclick="toggleForm()">Sign In</a>
@@ -46,23 +36,17 @@
             <!-- Sign In Form -->
             <div id="signinForm" style="display: none;">
                 <div class="form-group">
-                    <label>Username</label>
+                    <label>Email or Username</label>
                     <input type="text" id="signinEmail" placeholder="Enter your username" autocomplete="off">
                 </div>
                 <div class="form-group">
                     <label>Password</label>
                     <input type="password" id="signinPassword" placeholder="Enter your password" autocomplete="off">
                 </div>
-                <div class="error-msg" id="signinError"></div>
                 <button class="liquid-btn" onclick="handleSignin()">SIGN IN</button>
                 <div class="toggle-form">
                     Don't have an account? <a onclick="toggleForm()">Sign Up</a>
                 </div>
-            </div>
-
-            <!-- DB Info Note -->
-            <div class="db-info">
-                🔒 Data saved in your browser's localStorage — private & local
             </div>
         </div>
     </div>
@@ -75,20 +59,10 @@
                 <div class="logo-section">
                     <div class="logo">TODAY TASK</div>
                 </div>
-                <div class="header-right">
-                    <!-- Theme Toggle in App -->
-                    <button class="theme-toggle inline" id="themeToggleApp" onclick="toggleTheme()" title="Toggle Dark Mode">
-                        <div class="toggle-track">
-                            <span class="toggle-icon sun">☀️</span>
-                            <span class="toggle-icon moon">🌙</span>
-                            <div class="toggle-thumb"></div>
-                        </div>
-                    </button>
-                    <div class="user-info">
-                        <div class="user-avatar" id="userAvatar">U</div>
-                        <span class="user-name" id="displayUserName">User</span>
-                        <button class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
-                    </div>
+                <div class="user-info">
+                    <div class="user-avatar" id="userAvatar">U</div>
+                    <span class="user-name" id="displayUserName">User</span>
+                    <button class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
                 </div>
             </header>
 
@@ -117,13 +91,23 @@
                 <h2 class="graph-title">📊 Your Activity This Year</h2>
                 <div class="contribution-graph" id="contributionGraph"></div>
                 <div class="legend">
-                    <span class="legend-label">Less</span>
-                    <div class="legend-item"><div class="legend-box" style="background: rgba(255,255,255,0.15);"></div></div>
-                    <div class="legend-item"><div class="legend-box" style="background: #86efac; opacity: 0.4;"></div></div>
-                    <div class="legend-item"><div class="legend-box" style="background: #86efac; opacity: 0.7;"></div></div>
-                    <div class="legend-item"><div class="legend-box" style="background: #0d8659;"></div></div>
-                    <div class="legend-item"><div class="legend-box" style="background: #ef4444;"></div></div>
-                    <span class="legend-label">More / No Tasks</span>
+                    <span style="color: #475569; font-size: 0.9rem;">Less</span>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: rgba(255, 255, 255, 0.15);"></div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: #86efac; opacity: 0.4;"></div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: #86efac; opacity: 0.7;"></div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: #0d8659;"></div>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-box" style="background: #ef4444;"></div>
+                    </div>
+                    <span style="color: #475569; font-size: 0.9rem;">More / No Tasks</span>
                 </div>
             </div>
 
@@ -141,11 +125,11 @@
         <!-- Footer -->
         <footer>
             <p>📅 Made with ❤️ for productivity</p>
-            <p style="margin-top: 10px; font-size: 0.9rem;">Your data is saved locally in your browser and never shared</p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">Your data is saved locally and never shared</p>
         </footer>
     </div>
 
-    <!-- Add Section Modal -->
+    <!-- Custom Popup Modal -->
     <div class="custom-modal" id="addSectionModal">
         <div class="modal-overlay" onclick="closeAddSectionModal()"></div>
         <div class="modal-popup">
@@ -153,11 +137,13 @@
                 <h3 class="modal-title">✨ Create New Section</h3>
                 <button class="modal-close" onclick="closeAddSectionModal()">✕</button>
             </div>
+            
             <div class="modal-content">
                 <div class="form-group">
                     <label>Section Name</label>
                     <input type="text" id="sectionName" placeholder="e.g., Exercise, Reading, etc." autocomplete="off">
                 </div>
+
                 <div class="form-group">
                     <label>Choose Icon</label>
                     <div class="icon-picker">
@@ -176,6 +162,7 @@
                     </div>
                 </div>
             </div>
+
             <div class="modal-actions">
                 <button class="modal-btn modal-btn-primary" onclick="createSection()">Create</button>
                 <button class="modal-btn modal-btn-secondary" onclick="closeAddSectionModal()">Cancel</button>
@@ -183,7 +170,7 @@
         </div>
     </div>
 
-    <!-- Alert/Confirm Modal -->
+    <!-- Custom Alert/Confirm Modal -->
     <div class="custom-modal" id="alertModal">
         <div class="modal-overlay" onclick="closeAlert()"></div>
         <div class="alert-popup">
@@ -192,7 +179,7 @@
             </div>
             <div class="alert-actions">
                 <button class="alert-btn" id="alertConfirmBtn" onclick="confirmAlert()">OK</button>
-                <button class="alert-btn alert-btn-cancel" id="alertCancelBtn" style="display: none;" onclick="closeAlert()">Cancel</button>
+                <button class="alert-btn" id="alertCancelBtn" style="display: none;" onclick="closeAlert()">Cancel</button>
             </div>
         </div>
     </div>
