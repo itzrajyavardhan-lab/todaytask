@@ -1,21 +1,37 @@
-// Database
+// ==================== DATABASE (localStorage) ====================
+// All data is stored in your browser's localStorage.
+// To VIEW data: open DevTools → Application → Local Storage → your site URL
+// Keys used:
+//   "todayTaskUsers"       → all user accounts (name, password, tasks)
+//   "todayTaskCurrentUser" → currently logged-in username
+//   "todayTaskTheme"       → "light" or "dark"
+
 let users = JSON.parse(localStorage.getItem('todayTaskUsers')) || {};
 let currentUser = null;
 let selectedIcon = '📚';
 let alertCallback = null;
-let alertIsConfirm = false;
+
+// ==================== THEME ====================
+
+function applyTheme(theme) {
+    document.documentElement.setAttribute('data-theme', theme);
+    localStorage.setItem('todayTaskTheme', theme);
+}
+
+function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme') || 'light';
+    applyTheme(current === 'light' ? 'dark' : 'light');
+}
 
 // ==================== CUSTOM ALERT/CONFIRM ====================
 
 function showAlert(message, isConfirm = false, callback = null) {
     const modal = document.getElementById('alertModal');
-    const alertMessage = document.getElementById('alertMessage');
+    document.getElementById('alertMessage').textContent = message;
+    alertCallback = callback;
+
     const confirmBtn = document.getElementById('alertConfirmBtn');
     const cancelBtn = document.getElementById('alertCancelBtn');
-
-    alertMessage.textContent = message;
-    alertCallback = callback;
-    alertIsConfirm = isConfirm;
 
     if (isConfirm) {
         confirmBtn.textContent = 'Yes';
@@ -29,14 +45,27 @@ function showAlert(message, isConfirm = false, callback = null) {
 }
 
 function confirmAlert() {
-    const modal = document.getElementById('alertModal');
-    modal.classList.remove('active');
+    document.getElementById('alertModal').classList.remove('active');
     if (alertCallback) alertCallback();
 }
 
 function closeAlert() {
-    const modal = document.getElementById('alertModal');
-    modal.classList.remove('active');
+    document.getElementById('alertModal').classList.remove('active');
+}
+
+// Show inline error (not a popup)
+function showError(elementId, message) {
+    const el = document.getElementById(elementId);
+    el.textContent = message;
+    // Auto-clear after 3s
+    setTimeout(() => { if (el) el.textContent = ''; }, 3500);
+}
+
+function clearErrors() {
+    ['signupError', 'signinError'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = '';
+    });
 }
 
 // ==================== AUTH FUNCTIONS ====================
@@ -44,7 +73,8 @@ function closeAlert() {
 function toggleForm() {
     const signupForm = document.getElementById('signupForm');
     const signinForm = document.getElementById('signinForm');
-    
+    clearErrors();
+
     if (signupForm.style.display === 'none') {
         signupForm.style.display = 'block';
         signinForm.style.display = 'none';
@@ -56,25 +86,30 @@ function toggleForm() {
 
 function handleSignup() {
     const name = document.getElementById('signupName').value.trim();
-    const email = document.getElementById('signupEmail').value.trim().toLowerCase();
+    const username = document.getElementById('signupEmail').value.trim().toLowerCase();
     const password = document.getElementById('signupPassword').value;
 
-    if (!name || !email || !password) {
-        showAlert('Please fill all fields!');
+    if (!name || !username || !password) {
+        showError('signupError', '⚠️ Please fill in all fields!');
         return;
     }
 
-    if (users[email]) {
-        showAlert('User already exists! Please sign in instead.');
+    if (username.length < 3) {
+        showError('signupError', '⚠️ Username must be at least 3 characters!');
+        return;
+    }
+
+    if (users[username]) {
+        showError('signupError', '❌ Username already taken! Try a different one.');
         return;
     }
 
     if (password.length < 4) {
-        showAlert('Password must be at least 4 characters!');
+        showError('signupError', '⚠️ Password must be at least 4 characters!');
         return;
     }
 
-    users[email] = {
+    users[username] = {
         name,
         password,
         tasks: {
@@ -87,7 +122,8 @@ function handleSignup() {
     };
 
     localStorage.setItem('todayTaskUsers', JSON.stringify(users));
-    showAlert('Account created! Now sign in.', false, () => {
+
+    showAlert('✅ Account created! Now sign in.', false, () => {
         toggleForm();
         document.getElementById('signupName').value = '';
         document.getElementById('signupEmail').value = '';
@@ -96,21 +132,29 @@ function handleSignup() {
 }
 
 function handleSignin() {
-    const email = document.getElementById('signinEmail').value.trim().toLowerCase();
+    const username = document.getElementById('signinEmail').value.trim().toLowerCase();
     const password = document.getElementById('signinPassword').value;
 
-    if (!email || !password) {
-        showAlert('Please enter email and password!');
+    if (!username || !password) {
+        showError('signinError', '⚠️ Please enter your username and password!');
         return;
     }
 
-    if (!users[email] || users[email].password !== password) {
-        showAlert('Invalid email or password!');
+    // Check if user exists
+    if (!users[username]) {
+        showError('signinError', '❌ No account found with this username. Sign up first!');
         return;
     }
 
-    currentUser = email;
-    localStorage.setItem('todayTaskCurrentUser', email);
+    // Check password
+    if (users[username].password !== password) {
+        showError('signinError', '❌ Wrong password! Please try again.');
+        return;
+    }
+
+    // Success
+    currentUser = username;
+    localStorage.setItem('todayTaskCurrentUser', username);
     showApp();
     loadUserData();
 }
@@ -125,6 +169,7 @@ function handleLogout() {
         document.getElementById('signupForm').style.display = 'block';
         document.getElementById('signinEmail').value = '';
         document.getElementById('signinPassword').value = '';
+        clearErrors();
     });
 }
 
@@ -147,14 +192,15 @@ function addTask(e, sectionId) {
     e.preventDefault();
     const input = document.getElementById(`input-${sectionId}`);
     const text = input.value.trim();
-
     if (!text) return;
 
     const userData = users[currentUser];
-    const section = userData.tasks[sectionId];
-    const id = Date.now();
-    
-    section.tasks.push({ id, text, completed: false, date: new Date().toISOString() });
+    userData.tasks[sectionId].tasks.push({
+        id: Date.now(),
+        text,
+        completed: false,
+        date: new Date().toISOString()
+    });
     input.value = '';
 
     saveUserData();
@@ -163,8 +209,7 @@ function addTask(e, sectionId) {
 }
 
 function toggleTask(sectionId, taskId) {
-    const userData = users[currentUser];
-    const task = userData.tasks[sectionId].tasks.find(t => t.id === taskId);
+    const task = users[currentUser].tasks[sectionId].tasks.find(t => t.id === taskId);
     if (task) {
         task.completed = !task.completed;
         saveUserData();
@@ -186,15 +231,15 @@ function renderSection(sectionId) {
     const section = userData.tasks[sectionId];
     const container = document.getElementById(`tasks-${sectionId}`);
     const count = document.getElementById(`count-${sectionId}`);
-    const taskList = section.tasks;
-
     if (!container) return;
 
+    const taskList = section.tasks;
     const completed = taskList.filter(t => t.completed).length;
     count.textContent = `${completed}/${taskList.length}`;
 
     if (taskList.length === 0) {
         container.innerHTML = '<div class="empty-state"><div class="empty-state-icon">✨</div><p>No tasks yet</p></div>';
+        updateStats();
         return;
     }
 
@@ -207,6 +252,8 @@ function renderSection(sectionId) {
             <button type="button" class="delete-btn" onclick="deleteTask('${sectionId}', ${task.id})">🗑️</button>
         </div>
     `).join('');
+
+    updateStats();
 }
 
 function renderAll() {
@@ -277,17 +324,14 @@ function generateContributionGraph() {
     const days = Math.floor((today - startDate) / (1000 * 60 * 60 * 24)) + 1;
 
     const dailyStats = {};
-
     for (let i = 0; i < days; i++) {
         const date = new Date(startDate);
         date.setDate(date.getDate() + i);
-        const dateStr = date.toDateString();
-        dailyStats[dateStr] = { completed: 0, total: 0 };
+        dailyStats[date.toDateString()] = { completed: 0, total: 0 };
     }
 
     const todayStr = today.toDateString();
-    let todayTotal = 0;
-    let todayCompleted = 0;
+    let todayTotal = 0, todayCompleted = 0;
 
     userData.sections.forEach(sectionId => {
         const tasks = userData.tasks[sectionId].tasks;
@@ -308,23 +352,16 @@ function generateContributionGraph() {
         let level = 'empty';
         if (stats.total > 0) {
             const rate = stats.completed / stats.total;
-            if (rate === 0) {
-                level = 'none';
-            } else if (rate < 0.33) {
-                level = 'low';
-            } else if (rate < 0.66) {
-                level = 'medium';
-            } else {
-                level = 'high';
-            }
+            if (rate === 0) level = 'none';
+            else if (rate < 0.33) level = 'low';
+            else if (rate < 0.66) level = 'medium';
+            else level = 'high';
         }
 
-        const dateObj = new Date(date);
-        const formatted = dateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-
+        const formatted = new Date(date).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         return `
             <div class="contribution-day ${level}">
-                <div class="tooltip">${formatted} - ${stats.completed}/${stats.total}</div>
+                <div class="tooltip">${formatted} — ${stats.completed}/${stats.total}</div>
             </div>
         `;
     }).join('');
@@ -358,7 +395,6 @@ function createSection() {
 
     const userData = users[currentUser];
     const sectionId = 'section-' + Date.now();
-    
     userData.tasks[sectionId] = { name, icon: selectedIcon, tasks: [] };
     userData.sections.push(sectionId);
 
@@ -371,55 +407,119 @@ function createSection() {
 function deleteSection(sectionId) {
     const userData = users[currentUser];
     const sectionName = userData.tasks[sectionId].name;
-    
+
     showAlert(`Delete "${sectionName}" and all its tasks?`, true, () => {
         userData.sections = userData.sections.filter(s => s !== sectionId);
         delete userData.tasks[sectionId];
-
         saveUserData();
         renderAll();
         generateContributionGraph();
     });
 }
 
-// ==================== UTILITY FUNCTIONS ====================
+// ==================== UTILITY ====================
 
 function saveUserData() {
     localStorage.setItem('todayTaskUsers', JSON.stringify(users));
 }
 
 function escapeHtml(text) {
-    const map = {
-        '&': '&amp;',
-        '<': '&lt;',
-        '>': '&gt;',
-        '"': '&quot;',
-        "'": '&#039;'
-    };
+    const map = { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;' };
     return text.replace(/[&<>"']/g, m => map[m]);
+}
+
+// ══════════════════════════════════════════
+//  HISTORY
+// ══════════════════════════════════════════
+function openHistory(){
+  document.getElementById('histPanel').classList.add('on');
+  document.getElementById('histDetail').classList.remove('on');
+  document.getElementById('histList').style.display='block';
+  buildHistoryList();
+}
+function closeHistory(){
+  document.getElementById('histPanel').classList.remove('on');
+}
+
+function buildHistoryList(){
+  const u=DB[CU]; const tk=todayKey();
+  const dates=Object.keys(u.days).filter(k=>k!==tk).sort((a,b)=>b.localeCompare(a));
+  const empty=document.getElementById('histEmpty');
+  const datesEl=document.getElementById('histDates');
+  if(dates.length===0){ empty.style.display='block'; datesEl.innerHTML=''; return; }
+  empty.style.display='none';
+  datesEl.innerHTML=dates.map(k=>{
+    let tot=0,done=0;
+    u.order.forEach(sid=>{ const ts=u.days[k]?.[sid]||[]; tot+=ts.length; done+=ts.filter(t=>t.done).length; });
+    const pct=tot===0?0:Math.round(done/tot*100);
+    const lv=tot===0?0:(pct===100?4:pct>=67?3:pct>=34?2:pct>0?2:1);
+    return `<div class="hdc" onclick="openDayDetail('${k}')">
+      <div class="hdot l${lv}"></div>
+      <div class="hd-info">
+        <div class="hd-title">${fmtLong(k)}</div>
+        <div class="hd-sub">${done}/${tot} tasks complete · ${pct}%</div>
+      </div>
+      <div class="harrow">→</div>
+    </div>`;
+  }).join('');
+}
+
+function openDayDetail(k){
+  document.getElementById('histList').style.display='none';
+  const det=document.getElementById('histDetail');
+  det.classList.add('on');
+  document.getElementById('hDetTitle').textContent=fmtLong(k);
+  const u=DB[CU];
+  let html='';
+  u.order.forEach(sid=>{
+    const sec=u.sections[sid]; if(!sec) return;
+    const tasks=u.days[k]?.[sid]||[];
+    const done=tasks.filter(t=>t.done).length;
+    html+=`<div class="hsb">
+      <div class="hsb-hdr"><span>${sec.icon} ${esc(sec.name)}</span><span class="hscnt">${done}/${tasks.length}</span></div>
+      ${tasks.length===0
+        ?'<div class="hno-tasks">Koi task nahi tha is din</div>'
+        :tasks.map(t=>`<div class="hti ${t.done?'done':''}">
+            <span class="hchk">${t.done?'✓':'○'}</span>
+            <span class="hti-txt">${esc(t.text)}</span>
+          </div>`).join('')}
+    </div>`;
+  });
+  document.getElementById('hDetContent').innerHTML=html||'<div class="hno-tasks">Koi data nahi</div>';
+}
+
+function backToList(){
+  document.getElementById('histDetail').classList.remove('on');
+  document.getElementById('histList').style.display='block';
 }
 
 // ==================== EVENT LISTENERS ====================
 
-document.addEventListener('click', (e) => {
-    const modal = document.getElementById('addSectionModal');
-    if (e.target === modal) {
-        closeAddSectionModal();
-    }
-});
-
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape') {
-        closeAddSectionModal();
-    }
+    if (e.key === 'Escape') closeAddSectionModal();
     if (e.key === 'Enter' && document.getElementById('addSectionModal').classList.contains('active')) {
         createSection();
     }
 });
 
-// ==================== INITIALIZATION ====================
+// Enter key on sign-in/up forms
+document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter') return;
+    const signupVisible = document.getElementById('signupForm').style.display !== 'none';
+    const authVisible = document.getElementById('authContainer').style.display !== 'none';
+    if (!authVisible) return;
+    if (signupVisible) handleSignup();
+    else handleSignin();
+});
+
+// ==================== INIT ====================
 
 function init() {
+    // Apply saved theme
+    const savedTheme = localStorage.getItem('todayTaskTheme') || 'light';
+    applyTheme(savedTheme);
+
+    // Auto-login if session exists
     const savedUser = localStorage.getItem('todayTaskCurrentUser');
     if (savedUser && users[savedUser]) {
         currentUser = savedUser;
@@ -428,5 +528,4 @@ function init() {
     }
 }
 
-// Start the app
 init();
