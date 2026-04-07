@@ -1,0 +1,14 @@
+{
+  "name": "myapp",
+  "version": "1.0.0",
+  "description": "PocketBase project",
+  "main": "index.html",
+  "scripts": {
+    "pb": "cd backend && ./pocketbase serve --dev",
+    "pb:migrate": "cd backend && ./pocketbase migrate up",
+    "pb:admin": "cd backend && ./pocketbase superuser create admin@example.com Password123!"
+  },
+  "dependencies": {
+    "pocketbase": "^0.20.0"
+  }
+}
