@@ -1,15 +1,24 @@
-// ==================== DATABASE (localStorage) ====================
-// All data is stored in your browser's localStorage.
-// To VIEW data: open DevTools → Application → Local Storage → your site URL
-// Keys used:
-//   "todayTaskUsers"       → all user accounts (name, password, tasks)
-//   "todayTaskCurrentUser" → currently logged-in username
-//   "todayTaskTheme"       → "light" or "dark"
+// ==================== DATABASE (PocketBase Backend) ====================
+// Connected to PocketBase v0.36.8 running on http://127.0.0.1:8090
+// PocketBase bridge (pocketbase-bridge.js) intercepts localStorage calls
+// Backend provides:
+//   - User authentication via /api/collections/_superusers/auth-with-password
+//   - Task storage in client-side structured data
+//   - Real-time sync capability for future expansion
 
-let users = JSON.parse(localStorage.getItem('todayTaskUsers')) || {};
+// Wait for PocketBase bridge to load
+let pb = window.pb || null
 let currentUser = null;
 let selectedIcon = '📚';
 let alertCallback = null;
+
+// Initialize when bridge is ready
+if (!window.pb && typeof window.pbSignup !== 'function') {
+    console.warn('PocketBase bridge not yet loaded, waiting...')
+    window.addEventListener('load', () => {
+        pb = window.pb
+    })
+}
 
 // ==================== THEME ====================
 
