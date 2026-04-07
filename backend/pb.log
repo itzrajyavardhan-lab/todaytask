@@ -1,0 +1,40 @@
+[4.00ms] CREATE TABLE IF NOT EXISTS `_migrations` (file VARCHAR(255) PRIMARY KEY NOT NULL, applied INTEGER NOT NULL)
+[26.00ms] SELECT (1) FROM `_migrations` WHERE `file`='1640988000_aux_init.go' LIMIT 1
+[0.00ms] SELECT (1) FROM `_migrations` WHERE `file`='1640988000_init.go' LIMIT 1
+[0.00ms] SELECT (1) FROM `_migrations` WHERE `file`='1717233556_v0.23_migrate.go' LIMIT 1
+[0.00ms] SELECT (1) FROM `_migrations` WHERE `file`='1717233557_v0.23_migrate2.go' LIMIT 1
+[0.00ms] SELECT (1) FROM `_migrations` WHERE `file`='1717233558_v0.23_migrate3.go' LIMIT 1
+[0.00ms] SELECT (1) FROM `_migrations` WHERE `file`='1717233559_v0.23_migrate4.go' LIMIT 1
+[0.00ms] SELECT (1) FROM `_migrations` WHERE `file`='1763020353_update_default_auth_alert_templates.go' LIMIT 1
+[52.00ms] SELECT `_collections`.* FROM `_collections` ORDER BY `rowid` ASC
+[14.00ms] SELECT `_params`.* FROM `_params` WHERE `id`='settings'
+[0.00ms] SELECT `_collections`.* FROM `_collections` ORDER BY `rowid` ASC
+[0.00ms] CREATE TABLE IF NOT EXISTS `_migrations` (file VARCHAR(255) PRIMARY KEY NOT NULL, applied INTEGER NOT NULL)
+[0.00ms] SELECT (1) FROM `_migrations` WHERE `file`='1640988000_aux_init.go' LIMIT 1
+[0.00ms] SELECT (1) FROM `_migrations` WHERE `file`='1640988000_init.go' LIMIT 1
+[0.00ms] SELECT (1) FROM `_migrations` WHERE `file`='1717233556_v0.23_migrate.go' LIMIT 1
+[0.00ms] SELECT (1) FROM `_migrations` WHERE `file`='1717233557_v0.23_migrate2.go' LIMIT 1
+[0.00ms] SELECT (1) FROM `_migrations` WHERE `file`='1717233558_v0.23_migrate3.go' LIMIT 1
+[0.00ms] SELECT (1) FROM `_migrations` WHERE `file`='1717233559_v0.23_migrate4.go' LIMIT 1
+[0.00ms] SELECT (1) FROM `_migrations` WHERE `file`='1763020353_update_default_auth_alert_templates.go' LIMIT 1
+[0.00ms] SELECT (1) FROM `_migrations` WHERE `file`='1_initial_setup.js' LIMIT 1
+2026/04/07 13:32:54 Server started at http://127.0.0.1:8090
+├─ REST API:  http://127.0.0.1:8090/api/
+└─ Dashboard: http://127.0.0.1:8090/_/
+[0.00ms] SELECT count(*) FROM `_superusers` WHERE NOT (`email`='__pbinstaller@example.com')
+[0.00ms] SELECT `_superusers`.* FROM `_superusers` WHERE `email`='__pbinstaller@example.com' LIMIT 1
+
+(!) Launch the URL below in the browser if it hasn't been open already to create your first superuser account:
+http://127.0.0.1:8090/_/#/pbinstal/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjb2xsZWN0aW9uSWQiOiJwYmNfMzE0MjYzNTgyMyIsImV4cCI6MTc3NTU1MDc3NCwiaWQiOiI1eWQ0Y25xM3JlMnZ5cWkiLCJyZWZyZXNoYWJsZSI6ZmFsc2UsInR5cGUiOiJhdXRoIn0.RKpaS6WXT6q0QozgpDV27cve_WqIgq9EmrMKlDa4_ug
+(you can also create your first superuser by running: ./pocketbase superuser upsert EMAIL PASS)
+
+[0.00ms] SELECT `_superusers`.* FROM `_superusers` WHERE `_superusers`.`id`='5yd4cnq3re2vyqi' LIMIT 1
+[0.00ms] SELECT `_superusers`.* FROM `_superusers` WHERE `_superusers`.`id`='5yd4cnq3re2vyqi' LIMIT 1
+INFO GET /api/collections/_superusers/records/5yd4cnq3re2vyqi
+INFO GET /api/hello
+INFO GET /api/hello
+INFO GET /api/status
+INFO GET /api/tasks/list
+INFO GET /api/hello
+INFO GET /api/status
+INFO GET /api/tasks/list

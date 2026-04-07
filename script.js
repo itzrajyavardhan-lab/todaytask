@@ -11,6 +11,19 @@ let pb = window.pb || null
 let currentUser = null;
 let selectedIcon = '📚';
 let alertCallback = null;
+let users = {}; // ✅ CRITICAL FIX: Initialize users object
+
+// Initialize users from localStorage on page load
+function initUsers() {
+    try {
+        const stored = localStorage.getItem('todayTaskUsers');
+        users = stored ? JSON.parse(stored) : {};
+        console.log('[TODAY TASK] Users loaded:', Object.keys(users).length, 'users');
+    } catch (error) {
+        console.error('[TODAY TASK] Error loading users:', error);
+        users = {};
+    }
+}
 
 // Initialize when bridge is ready
 if (!window.pb && typeof window.pbSignup !== 'function') {
@@ -188,51 +201,96 @@ function showApp() {
 }
 
 function loadUserData() {
-    const userData = users[currentUser];
-    document.getElementById('displayUserName').textContent = userData.name;
-    document.getElementById('userAvatar').textContent = userData.name[0].toUpperCase();
-    renderAll();
-    generateContributionGraph();
+    try {
+        const userData = users[currentUser];
+        if (!userData) {
+            console.error('[TODAY TASK] User data not found:', currentUser);
+            showAlert('❌ Error loading user data');
+            return;
+        }
+        
+        document.getElementById('displayUserName').textContent = userData.name;
+        document.getElementById('userAvatar').textContent = userData.name[0].toUpperCase();
+        console.log('[TODAY TASK] User data loaded:', currentUser);
+        renderAll();
+        generateContributionGraph();
+    } catch (error) {
+        console.error('[TODAY TASK] loadUserData error:', error);
+        showAlert('❌ Error loading user data: ' + error.message);
+    }
 }
 
 // ==================== TASK FUNCTIONS ====================
 
 function addTask(e, sectionId) {
     e.preventDefault();
-    const input = document.getElementById(`input-${sectionId}`);
-    const text = input.value.trim();
-    if (!text) return;
+    try {
+        const input = document.getElementById(`input-${sectionId}`);
+        const text = input.value.trim();
+        if (!text) {
+            console.log('[TODAY TASK] Empty task text, skipping');
+            return;
+        }
 
-    const userData = users[currentUser];
-    userData.tasks[sectionId].tasks.push({
-        id: Date.now(),
-        text,
-        completed: false,
-        date: new Date().toISOString()
-    });
-    input.value = '';
+        const userData = users[currentUser];
+        if (!userData || !userData.tasks[sectionId]) {
+            console.error('[TODAY TASK] Invalid section:', sectionId);
+            showAlert('Error: Section not found');
+            return;
+        }
 
-    saveUserData();
-    renderSection(sectionId);
-    generateContributionGraph();
+        const task = {
+            id: Date.now(),
+            text,
+            completed: false,
+            date: new Date().toISOString()
+        };
+        
+        userData.tasks[sectionId].tasks.push(task);
+        input.value = '';
+
+        if (saveUserData()) {
+            console.log('[TODAY TASK] Task added:', task.id);
+            renderSection(sectionId);
+            generateContributionGraph();
+        }
+    } catch (error) {
+        console.error('[TODAY TASK] addTask error:', error);
+        showAlert('❌ Failed to add task: ' + error.message);
+    }
 }
 
 function toggleTask(sectionId, taskId) {
-    const task = users[currentUser].tasks[sectionId].tasks.find(t => t.id === taskId);
-    if (task) {
-        task.completed = !task.completed;
-        saveUserData();
-        renderSection(sectionId);
-        generateContributionGraph();
+    try {
+        const task = users[currentUser].tasks[sectionId].tasks.find(t => t.id === taskId);
+        if (task) {
+            task.completed = !task.completed;
+            if (saveUserData()) {
+                console.log('[TODAY TASK] Task toggled:', taskId, '→', task.completed);
+                renderSection(sectionId);
+                generateContributionGraph();
+            }
+        }
+    } catch (error) {
+        console.error('[TODAY TASK] toggleTask error:', error);
     }
 }
 
 function deleteTask(sectionId, taskId) {
-    const userData = users[currentUser];
-    userData.tasks[sectionId].tasks = userData.tasks[sectionId].tasks.filter(t => t.id !== taskId);
-    saveUserData();
-    renderSection(sectionId);
-    generateContributionGraph();
+    try {
+        const userData = users[currentUser];
+        const before = userData.tasks[sectionId].tasks.length;
+        userData.tasks[sectionId].tasks = userData.tasks[sectionId].tasks.filter(t => t.id !== taskId);
+        const after = userData.tasks[sectionId].tasks.length;
+
+        if (saveUserData()) {
+            console.log('[TODAY TASK] Task deleted:', taskId);
+            renderSection(sectionId);
+            generateContributionGraph();
+        }
+    } catch (error) {
+        console.error('[TODAY TASK] deleteTask error:', error);
+    }
 }
 
 function renderSection(sectionId) {
@@ -379,57 +437,97 @@ function generateContributionGraph() {
 // ==================== SECTION FUNCTIONS ====================
 
 function openAddSectionModal() {
-    document.getElementById('addSectionModal').classList.add('active');
-    document.getElementById('sectionName').value = '';
-    document.querySelectorAll('.icon-option').forEach(opt => opt.classList.remove('selected'));
-    selectedIcon = '📚';
+    try {
+        document.getElementById('addSectionModal').classList.add('active');
+        document.getElementById('sectionName').value = '';
+        document.querySelectorAll('.icon-option').forEach(opt => opt.classList.remove('selected'));
+        selectedIcon = '📚';
+        console.log('[TODAY TASK] Add section modal opened');
+    } catch (error) {
+        console.error('[TODAY TASK] openAddSectionModal error:', error);
+    }
 }
 
 function closeAddSectionModal() {
-    document.getElementById('addSectionModal').classList.remove('active');
+    try {
+        document.getElementById('addSectionModal').classList.remove('active');
+        console.log('[TODAY TASK] Add section modal closed');
+    } catch (error) {
+        console.error('[TODAY TASK] closeAddSectionModal error:', error);
+    }
 }
 
 function selectIcon(element, icon) {
-    document.querySelectorAll('.icon-option').forEach(opt => opt.classList.remove('selected'));
-    element.classList.add('selected');
-    selectedIcon = icon;
+    try {
+        document.querySelectorAll('.icon-option').forEach(opt => opt.classList.remove('selected'));
+        element.classList.add('selected');
+        selectedIcon = icon;
+        console.log('[TODAY TASK] Icon selected:', icon);
+    } catch (error) {
+        console.error('[TODAY TASK] selectIcon error:', error);
+    }
 }
 
 function createSection() {
-    const name = document.getElementById('sectionName').value.trim();
-    if (!name) {
-        showAlert('Please enter a section name');
-        return;
+    try {
+        const name = document.getElementById('sectionName').value.trim();
+        if (!name) {
+            showAlert('⚠️ Please enter a section name');
+            return;
+        }
+
+        const userData = users[currentUser];
+        const sectionId = 'section-' + Date.now();
+        userData.tasks[sectionId] = { name, icon: selectedIcon, tasks: [] };
+        userData.sections.push(sectionId);
+
+        if (saveUserData()) {
+            console.log('[TODAY TASK] Section created:', sectionId, name);
+            renderAll();
+            generateContributionGraph();
+            closeAddSectionModal();
+        }
+    } catch (error) {
+        console.error('[TODAY TASK] createSection error:', error);
+        showAlert('❌ Failed to create section: ' + error.message);
     }
-
-    const userData = users[currentUser];
-    const sectionId = 'section-' + Date.now();
-    userData.tasks[sectionId] = { name, icon: selectedIcon, tasks: [] };
-    userData.sections.push(sectionId);
-
-    saveUserData();
-    renderAll();
-    generateContributionGraph();
-    closeAddSectionModal();
 }
 
 function deleteSection(sectionId) {
-    const userData = users[currentUser];
-    const sectionName = userData.tasks[sectionId].name;
+    try {
+        const userData = users[currentUser];
+        const sectionName = userData.tasks[sectionId].name;
 
-    showAlert(`Delete "${sectionName}" and all its tasks?`, true, () => {
-        userData.sections = userData.sections.filter(s => s !== sectionId);
-        delete userData.tasks[sectionId];
-        saveUserData();
-        renderAll();
-        generateContributionGraph();
-    });
+        showAlert(`Delete "${sectionName}" and all its tasks?`, true, () => {
+            userData.sections = userData.sections.filter(s => s !== sectionId);
+            delete userData.tasks[sectionId];
+            if (saveUserData()) {
+                console.log('[TODAY TASK] Section deleted:', sectionId);
+                renderAll();
+                generateContributionGraph();
+            }
+        });
+    } catch (error) {
+        console.error('[TODAY TASK] deleteSection error:', error);
+    }
 }
 
 // ==================== UTILITY ====================
 
 function saveUserData() {
-    localStorage.setItem('todayTaskUsers', JSON.stringify(users));
+    try {
+        const data = JSON.stringify(users);
+        localStorage.setItem('todayTaskUsers', data);
+        console.log('[TODAY TASK] Data saved:', {
+            users: Object.keys(users).length,
+            timestamp: new Date().toISOString()
+        });
+        return true;
+    } catch (error) {
+        console.error('[TODAY TASK] Save error:', error);
+        showAlert('⚠️ Failed to save data! Storage may be full.');
+        return false;
+    }
 }
 
 function escapeHtml(text) {
@@ -459,6 +557,9 @@ document.addEventListener('keydown', (e) => {
 // ==================== INIT ====================
 
 function init() {
+    // ✅ CRITICAL FIX: Load users first
+    initUsers();
+    
     // Apply saved theme
     const savedTheme = localStorage.getItem('todayTaskTheme') || 'light';
     applyTheme(savedTheme);
@@ -472,4 +573,9 @@ function init() {
     }
 }
 
-init();
+// ✅ CRITICAL FIX: Ensure init is called AFTER DOM loads
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', init);
+} else {
+    init();
+}
