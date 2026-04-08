@@ -106,7 +106,8 @@ function toggleForm() {
     }
 }
 
-function handleSignup() {
+function handleSignup(e) {
+    if (e) e.preventDefault();
     const name = document.getElementById('signupName').value.trim();
     const username = document.getElementById('signupEmail').value.trim().toLowerCase();
     const password = document.getElementById('signupPassword').value;
@@ -153,7 +154,8 @@ function handleSignup() {
     });
 }
 
-function handleSignin() {
+function handleSignin(e) {
+    if (e) e.preventDefault();
     const username = document.getElementById('signinEmail').value.trim().toLowerCase();
     const password = document.getElementById('signinPassword').value;
 

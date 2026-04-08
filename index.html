@@ -10,11 +10,11 @@
     <!-- Auth Screen -->
     <div class="auth-container" id="authContainer">
         <!-- Theme Toggle on Auth Screen -->
-        <button class="theme-toggle" id="themeToggleAuth" onclick="toggleTheme()" title="Toggle Dark Mode">
+        <button type="button" class="theme-toggle" id="themeToggleAuth" onclick="toggleTheme()" title="Toggle Dark Mode">
             <div class="toggle-track">
                 <span class="toggle-icon sun">☀️</span>
                 <span class="toggle-icon moon">🌙</span>
-                <div class="toggle-thumb"></div>
+                <div class="toggle-thumb"></button>
             </div>
         </button>
 
@@ -36,10 +36,10 @@
                     <label>Password</label>
                     <input type="password" id="signupPassword" placeholder="Create a strong password (min 4 chars)" autocomplete="off">
                 </div>
-                <div class="error-msg" id="signupError"></div>
-                <button class="liquid-btn" onclick="handleSignup()">SIGN UP</button>
+                <div class="error-msg" id="signupError"></button>
+                <button type="button" class="liquid-btn" onclick="handleSignup(event)">SIGN UP</button>
                 <div class="toggle-form">
-                    Already have an account? <a onclick="toggleForm()">Sign In</a>
+                    Already have an account? <a href="#" onclick="toggleForm(); return false;">Sign In</a>
                 </div>
             </div>
 
@@ -53,10 +53,10 @@
                     <label>Password</label>
                     <input type="password" id="signinPassword" placeholder="Enter your password" autocomplete="off">
                 </div>
-                <div class="error-msg" id="signinError"></div>
-                <button class="liquid-btn" onclick="handleSignin()">SIGN IN</button>
+                <div class="error-msg" id="signinError"></button>
+                <button type="button" class="liquid-btn" onclick="handleSignin(event)">SIGN IN</button>
                 <div class="toggle-form">
-                    Don't have an account? <a onclick="toggleForm()">Sign Up</a>
+                    Don't have an account? <a href="#" onclick="toggleForm(); return false;">Sign Up</a>
                 </div>
             </div>
 
@@ -81,13 +81,13 @@
                         <div class="toggle-track">
                             <span class="toggle-icon sun">☀️</span>
                             <span class="toggle-icon moon">🌙</span>
-                            <div class="toggle-thumb"></div>
+                            <div class="toggle-thumb"></button>
                         </div>
                     </button>
                     <div class="user-info">
                         <div class="user-avatar" id="userAvatar">U</div>
                         <span class="user-name" id="displayUserName">User</span>
-                        <button class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
+                        <button type="button" class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
                     </div>
                 </div>
             </header>
@@ -115,24 +115,24 @@
             <!-- Contribution Graph -->
             <div class="graph-section">
                 <h2 class="graph-title">📊 Your Activity This Year</h2>
-                <div class="contribution-graph" id="contributionGraph"></div>
+                <div class="contribution-graph" id="contributionGraph"></button>
                 <div class="legend">
                     <span class="legend-label">Less</span>
-                    <div class="legend-item"><div class="legend-box" style="background: rgba(255,255,255,0.15);"></div></div>
-                    <div class="legend-item"><div class="legend-box" style="background: #86efac; opacity: 0.4;"></div></div>
-                    <div class="legend-item"><div class="legend-box" style="background: #86efac; opacity: 0.7;"></div></div>
-                    <div class="legend-item"><div class="legend-box" style="background: #0d8659;"></div></div>
-                    <div class="legend-item"><div class="legend-box" style="background: #ef4444;"></div></div>
+                    <div class="legend-item"><div class="legend-box" style="background: rgba(255,255,255,0.15);"></button></div>
+                    <div class="legend-item"><div class="legend-box" style="background: #86efac; opacity: 0.4;"></button></div>
+                    <div class="legend-item"><div class="legend-box" style="background: #86efac; opacity: 0.7;"></button></div>
+                    <div class="legend-item"><div class="legend-box" style="background: #0d8659;"></button></div>
+                    <div class="legend-item"><div class="legend-box" style="background: #ef4444;"></button></div>
                     <span class="legend-label">More / No Tasks</span>
                 </div>
             </div>
 
             <!-- Task Sections -->
-            <div class="sections-container" id="sectionsContainer"></div>
+            <div class="sections-container" id="sectionsContainer"></button>
 
             <!-- Add Section Button -->
             <div style="display: flex; justify-content: center; margin-bottom: 60px;">
-                <button class="add-section-btn" onclick="openAddSectionModal()" style="width: 300px; max-width: 100%;">
+                <button type="button" class="add-section-btn" onclick="openAddSectionModal()" style="width: 300px; max-width: 100%;">
                     ➕ Add New Section
                 </button>
             </div>
@@ -147,11 +147,11 @@
 
     <!-- Add Section Modal -->
     <div class="custom-modal" id="addSectionModal">
-        <div class="modal-overlay" onclick="closeAddSectionModal()"></div>
+        <div class="modal-overlay" onclick="closeAddSectionModal()"></button>
         <div class="modal-popup">
             <div class="modal-header">
                 <h3 class="modal-title">✨ Create New Section</h3>
-                <button class="modal-close" onclick="closeAddSectionModal()">✕</button>
+                <button type="button" class="modal-close" onclick="closeAddSectionModal()">✕</button>
             </div>
             <div class="modal-content">
                 <div class="form-group">
@@ -161,37 +161,37 @@
                 <div class="form-group">
                     <label>Choose Icon</label>
                     <div class="icon-picker">
-                        <div class="icon-option" onclick="selectIcon(this, '📚')">📚</div>
-                        <div class="icon-option" onclick="selectIcon(this, '💻')">💻</div>
-                        <div class="icon-option" onclick="selectIcon(this, '💼')">💼</div>
-                        <div class="icon-option" onclick="selectIcon(this, '🎨')">🎨</div>
-                        <div class="icon-option" onclick="selectIcon(this, '🏋️')">🏋️</div>
-                        <div class="icon-option" onclick="selectIcon(this, '🎵')">🎵</div>
-                        <div class="icon-option" onclick="selectIcon(this, '⚽')">⚽</div>
-                        <div class="icon-option" onclick="selectIcon(this, '🍳')">🍳</div>
-                        <div class="icon-option" onclick="selectIcon(this, '📖')">📖</div>
-                        <div class="icon-option" onclick="selectIcon(this, '🚀')">🚀</div>
-                        <div class="icon-option" onclick="selectIcon(this, '✏️')">✏️</div>
-                        <div class="icon-option" onclick="selectIcon(this, '🎯')">🎯</div>
+                        <button type="button" class="icon-option" onclick="selectIcon(this, '📚')">📚</button>
+                        <button type="button" class="icon-option" onclick="selectIcon(this, '💻')">💻</button>
+                        <button type="button" class="icon-option" onclick="selectIcon(this, '💼')">💼</button>
+                        <button type="button" class="icon-option" onclick="selectIcon(this, '🎨')">🎨</button>
+                        <button type="button" class="icon-option" onclick="selectIcon(this, '🏋️')">🏋️</button>
+                        <button type="button" class="icon-option" onclick="selectIcon(this, '🎵')">🎵</button>
+                        <button type="button" class="icon-option" onclick="selectIcon(this, '⚽')">⚽</button>
+                        <button type="button" class="icon-option" onclick="selectIcon(this, '🍳')">🍳</button>
+                        <button type="button" class="icon-option" onclick="selectIcon(this, '📖')">📖</button>
+                        <button type="button" class="icon-option" onclick="selectIcon(this, '🚀')">🚀</button>
+                        <button type="button" class="icon-option" onclick="selectIcon(this, '✏️')">✏️</button>
+                        <button type="button" class="icon-option" onclick="selectIcon(this, '🎯')">🎯</button>
                     </div>
                 </div>
             </div>
             <div class="modal-actions">
-                <button class="modal-btn modal-btn-primary" onclick="createSection()">Create</button>
-                <button class="modal-btn modal-btn-secondary" onclick="closeAddSectionModal()">Cancel</button>
+                <button type="button" class="modal-btn modal-btn-primary" onclick="createSection()">Create</button>
+                <button type="button" class="modal-btn modal-btn-secondary" onclick="closeAddSectionModal()">Cancel</button>
             </div>
         </div>
     </div>
 
     <!-- Alert/Confirm Modal -->
     <div class="custom-modal" id="alertModal">
-        <div class="modal-overlay" onclick="closeAlert()"></div>
+        <div class="modal-overlay" onclick="closeAlert()"></button>
         <div class="alert-popup">
             <div class="alert-content">
                 <p id="alertMessage"></p>
             </div>
             <div class="alert-actions">
-                <button class="alert-btn" id="alertConfirmBtn" onclick="confirmAlert()">OK</button>
+                <button type="button" class="alert-btn" id="alertConfirmBtn" onclick="confirmAlert()">OK</button>
                 <button class="alert-btn alert-btn-cancel" id="alertCancelBtn" style="display: none;" onclick="closeAlert()">Cancel</button>
             </div>
         </div>
