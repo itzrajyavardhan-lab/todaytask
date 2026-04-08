@@ -220,6 +220,7 @@ function renderAll() {
     renderSections();
     updateStats();
     renderWeeklyStats();
+    renderMiniWeekly();
 }
 
 function renderSections() {
@@ -471,51 +472,192 @@ function renderWeeklyStats() {
     }
 }
 
-function openHistory() {
+function renderMiniWeekly() {
+    try {
+        const weeklyData = getWeeklyStats();
+        const miniBars = document.getElementById('miniBars');
+        if (!miniBars) return;
+        miniBars.innerHTML = '';
+        weeklyData.forEach(d => {
+            const h = Math.max(6, Math.min(d.completed * 6 + 6, 28));
+            const div = document.createElement('div');
+            div.className = 'mini-bar';
+            div.style.height = h + 'px';
+            div.title = `${d.day} ${d.date}: ${d.completed} completed`;
+            miniBars.appendChild(div);
+        });
+    } catch (error) {
+        console.error('[TODAY TASK] renderMiniWeekly error:', error);
+    }
+}
+
+function openWeekModal() {
+    try {
+        const modalId = 'historyModal'; // reuse history modal for week view
+        const modal = document.getElementById(modalId);
+        if (!modal) return;
+
+        // build week overview
+        const weeklyData = getWeeklyStats();
+        let html = '<div style="padding:12px;">';
+        html += '<h3>Week Overview</h3>';
+
+        // progress: completed / tasks created in week
+        let completedSum = weeklyData.reduce((s, x) => s + x.completed, 0);
+        // count tasks created in week
+        let createdSum = 0;
+        weeklyData.forEach(d => {
+            // count tasks created that day
+            users[currentUser].sections.forEach(secId => {
+                const sec = users[currentUser].tasks[secId];
+                if (!sec) return;
+                sec.tasks.forEach(t => {
+                    const createdDate = (t.createdAt || '').split('T')[0];
+                    if (createdDate === d.date) createdSum++;
+                });
+            });
+        });
+
+        const progress = createdSum === 0 ? 0 : Math.round((completedSum / createdSum) * 100);
+        html += `<div style="margin:8px 0;">Week Progress: <b>${progress}%</b></div>`;
+        html += `<div style="height:12px;background:rgba(0,0,0,0.06);border-radius:8px;overflow:hidden;margin-bottom:12px;">
+                    <div style="width:${progress}%;height:100%;background:#22c55e"></div></div>`;
+
+        // daily bars
+        html += '<div style="display:flex;gap:8px;align-items:end;height:160px;">
+        ';
+        weeklyData.forEach(d => {
+            const h = Math.min(d.completed * 18, 140);
+            html += `<div style="flex:1;text-align:center;">
+                        <div style="height:${h}px;margin:6px auto;width:40px;background:#22c55e;border-radius:6px;box-shadow:0 4px 10px rgba(34,197,94,0.15);"></div>
+                        <div style="margin-top:6px;font-size:0.85rem">${d.day}</div>
+                        <div style="font-weight:700">${d.completed}</div>
+                    </div>`;
+        });
+        html += '</div>';
+
+        html += '</div>';
+
+        document.getElementById('historyContent').innerHTML = html;
+        modal.classList.add('active');
+    } catch (error) {
+        console.error('[TODAY TASK] openWeekModal error:', error);
+    }
+}
+
+function closeWeekModal() {
+    const modal = document.getElementById('historyModal');
+    if (modal) modal.classList.remove('active');
+}
+
+function openHistory(dateStr = null) {
     try {
         const userData = users[currentUser];
         const history = userData.history || [];
-        
-        let html = '<div class="history-list">';
-        
-        if (history.length === 0) {
-            html += '<p class="no-history">No completed tasks yet. Start completing tasks to see history!</p>';
-        } else {
-            // Show last 50 entries
-            const recent = history.slice(-50).reverse();
-            recent.forEach(entry => {
-                const date = new Date(entry.date);
-                const timeStr = date.toLocaleTimeString('en-US', { 
-                    hour: '2-digit', 
-                    minute: '2-digit',
-                    hour12: true 
-                });
-                const dateStr = date.toLocaleDateString('en-US', {
-                    month: 'short',
-                    day: 'numeric'
-                });
-                
-                html += `
-                    <div class="history-item">
-                        <div class="history-date">${dateStr}</div>
-                        <div class="history-time">${timeStr}</div>
-                        <div class="history-task">${escapeHtml(entry.text)}</div>
-                        <div class="history-section">${escapeHtml(entry.section)}</div>
-                    </div>
-                `;
-            });
-        }
-        
-        html += '</div>';
-        
+
+        // Build header with date picker
+        const today = new Date();
+        const isoToday = today.toISOString().split('T')[0];
+        const selected = dateStr || isoToday;
+
+        const headerHtml = `
+            <div style="display:flex;gap:8px;align-items:center;padding:12px;">
+                <label style="font-weight:600;">Select date:</label>
+                <input type="date" id="historyDatePicker" value="${selected}" style="padding:6px;border-radius:6px;border:1px solid var(--border-primary);">
+                <button type="button" class="history-btn" id="historyDateBtn" style="margin-left:8px;">Show</button>
+            </div>
+            <div id="historyBody"></div>
+        `;
+
         const modal = document.getElementById('historyModal');
-        if (modal) {
-            document.getElementById('historyContent').innerHTML = html;
-            modal.classList.add('active');
-        }
+        if (!modal) return;
+        document.getElementById('historyContent').innerHTML = headerHtml;
+        modal.classList.add('active');
+
+        // Attach listeners
+        document.getElementById('historyDateBtn').addEventListener('click', () => {
+            const val = document.getElementById('historyDatePicker').value;
+            renderHistoryForDate(val);
+        });
+
+        // initial render
+        renderHistoryForDate(selected);
+
     } catch (error) {
         console.error('[TODAY TASK] openHistory error:', error);
         showAlert('Error loading history');
+    }
+}
+
+function renderHistoryForDate(dateStr) {
+    try {
+        const userData = users[currentUser];
+        if (!userData) return;
+
+        // Completed on that date
+        const completed = (userData.history || []).filter(h => h.date.startsWith(dateStr));
+
+        // Tasks created on that date
+        const tasksOnDate = [];
+        userData.sections.forEach(secId => {
+            const sec = userData.tasks[secId];
+            if (!sec) return;
+            sec.tasks.forEach(t => {
+                const createdDate = (t.createdAt || '').split('T')[0];
+                if (createdDate === dateStr) {
+                    tasksOnDate.push({ text: t.text, completed: !!t.completed, section: sec.name });
+                }
+            });
+        });
+
+        const completedCount = completed.length;
+        const createdCount = tasksOnDate.length;
+        const incompleteCount = tasksOnDate.filter(t => !t.completed).length;
+
+        // Build body HTML: summary + mini bar graph + list
+        let body = `
+            <div style="padding:12px;display:flex;gap:16px;flex-direction:column;">
+                <div style="display:flex;gap:12px;align-items:center;">
+                    <div style="font-weight:700;font-size:1rem;">${dateStr}</div>
+                    <div style="background:#eef6ed;padding:8px;border-radius:8px;">Completed: <b style="color:#116530">${completedCount}</b></div>
+                    <div style="background:#fff4f4;padding:8px;border-radius:8px;">Incomplete: <b style="color:#b91c1c">${incompleteCount}</b></div>
+                </div>
+
+                <div style="display:flex;gap:12px;align-items:end;height:120px;padding-top:8px;">
+                    <div style="flex:1;text-align:center;">Completed<br><div style="height: ${Math.min(completedCount*18,120)}px; background:#22c55e; width:40px; margin:6px auto;border-radius:6px; box-shadow:0 4px 10px rgba(34,197,94,0.2);"></div><div>${completedCount}</div></div>
+                    <div style="flex:1;text-align:center;">Incomplete<br><div style="height: ${Math.min(incompleteCount*18,120)}px; background:#ef4444; width:40px; margin:6px auto;border-radius:6px; box-shadow:0 4px 10px rgba(239,68,68,0.15);"></div><div>${incompleteCount}</div></div>
+                </div>
+
+                <div style="margin-top:8px;">
+                    <h3 style="margin:8px 0;">Completed Tasks</h3>
+                    <div>
+        `;
+
+        if (completedCount === 0) body += '<p style="opacity:0.7;">No completed tasks on this date.</p>';
+        else {
+            const recentComp = completed.slice().reverse();
+            recentComp.forEach(entry => {
+                const timeStr = new Date(entry.date).toLocaleTimeString();
+                body += `<div style="padding:8px;border-bottom:1px solid var(--border-primary);">${escapeHtml(entry.text)} <span style="float:right;opacity:0.7">${escapeHtml(entry.section)} • ${timeStr}</span></div>`;
+            });
+        }
+
+        body += '</div>';
+
+        body += '<h3 style="margin:8px 0;">Tasks Created That Day</h3>';
+        if (tasksOnDate.length === 0) body += '<p style="opacity:0.7;">No tasks created on this date.</p>';
+        else {
+            tasksOnDate.forEach(t => {
+                body += `<div style="padding:8px;border-bottom:1px solid var(--border-primary);">${escapeHtml(t.text)} <span style="float:right;opacity:0.7">${escapeHtml(t.section)} • ${t.completed ? '<b style="color:#116530">Completed</b>' : '<b style="color:#b91c1c">Incomplete</b>'}</span></div>`;
+            });
+        }
+
+        body += '</div>';
+
+        document.getElementById('historyBody').innerHTML = body;
+
+    } catch (error) {
+        console.error('[TODAY TASK] renderHistoryForDate error:', error);
     }
 }
 

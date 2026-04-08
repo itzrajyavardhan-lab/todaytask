@@ -77,13 +77,27 @@
                 </div>
                 <div class="header-right">
                     <!-- Theme Toggle in App -->
-                    <button type="button" class="theme-toggle inline" id="themeToggleApp" onclick="toggleTheme()" title="Toggle Dark Mode">
-                        <div class="toggle-track">
-                            <span class="toggle-icon sun">☀️</span>
-                            <span class="toggle-icon moon">🌙</span>
-                            <div class="toggle-thumb"></div>
+                    <div class="header-controls">
+                        <button type="button" class="theme-toggle inline" id="themeToggleApp" onclick="toggleTheme()" title="Toggle Dark Mode">
+                            <div class="toggle-track">
+                                <span class="toggle-icon sun">☀️</span>
+                                <span class="toggle-icon moon">🌙</span>
+                                <div class="toggle-thumb"></div>
+                            </div>
+                        </button>
+
+                        <!-- Mini Weekly + History in Header -->
+                        <div class="dashboard-mini" id="dashboardMini">
+                            <button type="button" class="mini-week" id="miniWeekBtn" title="Open week overview" onclick="openWeekModal()">
+                                <div class="mini-bars" id="miniBars"></div>
+                                <div class="mini-label">This Week</div>
+                            </button>
+                            <button type="button" class="history-btn header-history" id="headerHistoryBtn" onclick="openHistory()" title="View history">
+                                📋 History
+                            </button>
                         </div>
-                    </button>
+                    </div>
+
                     <div class="user-info">
                         <div class="user-avatar" id="userAvatar">U</div>
                         <div class="user-details">
