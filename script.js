@@ -219,6 +219,7 @@ function loadUserData() {
 function renderAll() {
     renderSections();
     updateStats();
+    renderWeeklyStats();
 }
 
 function renderSections() {
@@ -294,10 +295,6 @@ function addTask(e, sectionId) {
             return;
         }
 
-        const today = new Date().toISOString().split('T')[0];
-        userData.taskStats = userData.taskStats || {};
-        userData.taskStats[today] = (userData.taskStats[today] || 0) + 1;
-
         userData.tasks[sectionId].tasks.push({
             text,
             completed: false,
@@ -307,7 +304,6 @@ function addTask(e, sectionId) {
         localStorage.setItem('todayTaskUsers', JSON.stringify(users));
         input.value = '';
         renderAll();
-        generateContributionGraph();
     } catch (error) {
         console.error('[TODAY TASK] addTask error:', error);
     }
@@ -322,10 +318,22 @@ function toggleTask(sectionId, taskId) {
 
             const today = new Date().toISOString().split('T')[0];
             userData.taskStats = userData.taskStats || {};
+            userData.completedStats = userData.completedStats || {};
+            
             if (task.completed) {
-                userData.taskStats[today] = (userData.taskStats[today] || 0) + 1;
-            } else if (userData.taskStats[today]) {
-                userData.taskStats[today] = Math.max(0, userData.taskStats[today] - 1);
+                // Track completion only on COMPLETE
+                userData.completedStats[today] = (userData.completedStats[today] || 0) + 1;
+                
+                // Add to history
+                userData.history = userData.history || [];
+                userData.history.push({
+                    date: new Date().toISOString(),
+                    text: task.text,
+                    section: userData.tasks[sectionId].name,
+                    status: 'completed'
+                });
+            } else if (userData.completedStats[today]) {
+                userData.completedStats[today] = Math.max(0, userData.completedStats[today] - 1);
             }
 
             localStorage.setItem('todayTaskUsers', JSON.stringify(users));
@@ -383,7 +391,7 @@ function generateContributionGraph() {
         if (!userData) return;
 
         const today = new Date();
-        const taskStats = userData.taskStats || {};
+        const completedStats = userData.completedStats || {};
         let html = '';
 
         for (let i = 365; i >= 0; i--) {
@@ -391,16 +399,16 @@ function generateContributionGraph() {
             date.setDate(date.getDate() - i);
 
             const dateStr = date.toISOString().split('T')[0];
-            const count = taskStats[dateStr] || 0;
+            const count = completedStats[dateStr] || 0;
             
-            // Determine color level based on tasks done
+            // Only show color if tasks are COMPLETED
             let level = 'level-0';
             if (count > 0) level = 'level-1';
             if (count > 2) level = 'level-2';
             if (count > 4) level = 'level-3';
             if (count > 6) level = 'level-4';
 
-            html += `<div class="graph-box ${level}" title="${dateStr}: ${count} tasks"></div>`;
+            html += `<div class="graph-box ${level}" title="${dateStr}: ${count} completed"></div>`;
         }
 
         document.getElementById('contributionGraph').innerHTML = html;
@@ -409,7 +417,112 @@ function generateContributionGraph() {
     }
 }
 
-// ==================== MODAL FUNCTIONS ====================
+// ==================== WEEKLY STATS & HISTORY ====================
+function getWeeklyStats() {
+    try {
+        const userData = users[currentUser];
+        if (!userData) return [];
+
+        const completedStats = userData.completedStats || {};
+        const weeklyData = [];
+        
+        for (let i = 6; i >= 0; i--) {
+            const date = new Date();
+            date.setDate(date.getDate() - i);
+            const dateStr = date.toISOString().split('T')[0];
+            const day = date.toLocaleString('en-US', { weekday: 'short' });
+            const count = completedStats[dateStr] || 0;
+            
+            weeklyData.push({
+                date: dateStr,
+                day: day,
+                completed: count
+            });
+        }
+        
+        return weeklyData;
+    } catch (error) {
+        console.error('[TODAY TASK] getWeeklyStats error:', error);
+        return [];
+    }
+}
+
+function renderWeeklyStats() {
+    try {
+        const weeklyData = getWeeklyStats();
+        let html = '<div class="weekly-stats">';
+        
+        weeklyData.forEach(day => {
+            const barHeight = Math.min(day.completed * 15, 80);
+            html += `
+                <div class="weekly-bar">
+                    <div class="bar-fill" style="height: ${barHeight}px; background: #22c55e;"></div>
+                    <div class="bar-label">${day.day}</div>
+                    <div class="bar-count">${day.completed}</div>
+                </div>
+            `;
+        });
+        
+        html += '</div>';
+        const container = document.getElementById('weeklyStatsContainer');
+        if (container) container.innerHTML = html;
+    } catch (error) {
+        console.error('[TODAY TASK] renderWeeklyStats error:', error);
+    }
+}
+
+function openHistory() {
+    try {
+        const userData = users[currentUser];
+        const history = userData.history || [];
+        
+        let html = '<div class="history-list">';
+        
+        if (history.length === 0) {
+            html += '<p class="no-history">No completed tasks yet. Start completing tasks to see history!</p>';
+        } else {
+            // Show last 50 entries
+            const recent = history.slice(-50).reverse();
+            recent.forEach(entry => {
+                const date = new Date(entry.date);
+                const timeStr = date.toLocaleTimeString('en-US', { 
+                    hour: '2-digit', 
+                    minute: '2-digit',
+                    hour12: true 
+                });
+                const dateStr = date.toLocaleDateString('en-US', {
+                    month: 'short',
+                    day: 'numeric'
+                });
+                
+                html += `
+                    <div class="history-item">
+                        <div class="history-date">${dateStr}</div>
+                        <div class="history-time">${timeStr}</div>
+                        <div class="history-task">${escapeHtml(entry.text)}</div>
+                        <div class="history-section">${escapeHtml(entry.section)}</div>
+                    </div>
+                `;
+            });
+        }
+        
+        html += '</div>';
+        
+        const modal = document.getElementById('historyModal');
+        if (modal) {
+            document.getElementById('historyContent').innerHTML = html;
+            modal.classList.add('active');
+        }
+    } catch (error) {
+        console.error('[TODAY TASK] openHistory error:', error);
+        showAlert('Error loading history');
+    }
+}
+
+function closeHistory() {
+    const modal = document.getElementById('historyModal');
+    if (modal) modal.classList.remove('active');
+}
 function openAddSectionModal() {
     document.getElementById('addSectionModal').classList.add('active');
 }

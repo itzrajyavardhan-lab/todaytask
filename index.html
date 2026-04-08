@@ -130,6 +130,15 @@
                 </div>
             </div>
 
+            <!-- Weekly Stats -->
+            <div class="weekly-section">
+                <div class="weekly-header">
+                    <h2>📈 This Week</h2>
+                    <button type="button" class="history-btn" onclick="openHistory()" title="View all completed tasks">📋 History</button>
+                </div>
+                <div class="weekly-stats-container" id="weeklyStatsContainer"></div>
+            </div>
+
             <!-- Task Sections -->
             <div class="sections-container" id="sectionsContainer"></div>
 
@@ -197,6 +206,18 @@
                 <button type="button" class="alert-btn" id="alertConfirmBtn" onclick="confirmAlert()">OK</button>
                 <button type="button" class="alert-btn alert-btn-cancel" id="alertCancelBtn" style="display: none;" onclick="closeAlert()">Cancel</button>
             </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div class="custom-modal" id="historyModal">
+        <div class="modal-overlay" onclick="closeHistory()"></div>
+        <div class="history-popup">
+            <div class="history-header">
+                <h2>📋 Completed Tasks History</h2>
+                <button type="button" class="close-btn" onclick="closeHistory()">✕</button>
+            </div>
+            <div class="history-content" id="historyContent"></div>
         </div>
     </div>
 
