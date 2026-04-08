@@ -37,7 +37,7 @@
                     <input type="password" id="signupPassword" placeholder="Create a strong password (min 4 chars)" autocomplete="off" required>
                 </div>
                 <div class="error-msg" id="signupError"></div>
-                <button type="submit" class="liquid-btn">SIGN UP</button>
+                <button type="button" class="liquid-btn" onclick="handleSignup(event)">SIGN UP</button>
                 <div class="toggle-form">
                     Already have an account? <a href="#" onclick="toggleForm(); return false;">Sign In</a>
                 </div>
@@ -54,7 +54,7 @@
                     <input type="password" id="signinPassword" placeholder="Enter your password" autocomplete="off" required>
                 </div>
                 <div class="error-msg" id="signinError"></div>
-                <button type="submit" class="liquid-btn">SIGN IN</button>
+                <button type="button" class="liquid-btn" onclick="handleSignin(event)">SIGN IN</button>
                 <div class="toggle-form">
                     Don't have an account? <a href="#" onclick="toggleForm(); return false;">Sign Up</a>
                 </div>
