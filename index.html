@@ -14,7 +14,7 @@
             <div class="toggle-track">
                 <span class="toggle-icon sun">☀️</span>
                 <span class="toggle-icon moon">🌙</span>
-                <div class="toggle-thumb"></button>
+                <div class="toggle-thumb"></div>
             </div>
         </button>
 
@@ -23,46 +23,46 @@
             <p class="auth-subtitle">Your Personal Task Manager</p>
 
             <!-- Sign Up Form -->
-            <div id="signupForm">
+            <form id="signupForm" onsubmit="handleSignup(event)">
                 <div class="form-group">
                     <label>Full Name</label>
-                    <input type="text" id="signupName" placeholder="Enter your full name" autocomplete="off">
+                    <input type="text" id="signupName" placeholder="Enter your full name" autocomplete="off" required>
                 </div>
                 <div class="form-group">
                     <label>Username</label>
-                    <input type="text" id="signupEmail" placeholder="Choose your username" autocomplete="off">
+                    <input type="text" id="signupEmail" placeholder="Choose your username" autocomplete="off" required>
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" id="signupPassword" placeholder="Create a strong password (min 4 chars)" autocomplete="off">
+                    <input type="password" id="signupPassword" placeholder="Create a strong password (min 4 chars)" autocomplete="off" required>
                 </div>
-                <div class="error-msg" id="signupError"></button>
-                <button type="button" class="liquid-btn" onclick="handleSignup(event)">SIGN UP</button>
+                <div class="error-msg" id="signupError"></div>
+                <button type="submit" class="liquid-btn" id="signupBtn">SIGN UP</button>
                 <div class="toggle-form">
                     Already have an account? <a href="#" onclick="toggleForm(); return false;">Sign In</a>
                 </div>
-            </div>
+            </form>
 
             <!-- Sign In Form -->
-            <div id="signinForm" style="display: none;">
+            <form id="signinForm" style="display: none;" onsubmit="handleSignin(event)">
                 <div class="form-group">
                     <label>Username</label>
-                    <input type="text" id="signinEmail" placeholder="Enter your username" autocomplete="off">
+                    <input type="text" id="signinEmail" placeholder="Enter your username" autocomplete="off" required>
                 </div>
                 <div class="form-group">
                     <label>Password</label>
-                    <input type="password" id="signinPassword" placeholder="Enter your password" autocomplete="off">
+                    <input type="password" id="signinPassword" placeholder="Enter your password" autocomplete="off" required>
                 </div>
-                <div class="error-msg" id="signinError"></button>
-                <button type="button" class="liquid-btn" onclick="handleSignin(event)">SIGN IN</button>
+                <div class="error-msg" id="signinError"></div>
+                <button type="submit" class="liquid-btn" id="signinBtn">SIGN IN</button>
                 <div class="toggle-form">
                     Don't have an account? <a href="#" onclick="toggleForm(); return false;">Sign Up</a>
                 </div>
-            </div>
+            </form>
 
             <!-- DB Info Note -->
             <div class="db-info">
-                🔒 Data saved in your browser's localStorage — private & local
+                🔒 Your data is securely saved in our database
             </div>
         </div>
     </div>
@@ -77,11 +77,11 @@
                 </div>
                 <div class="header-right">
                     <!-- Theme Toggle in App -->
-                    <button class="theme-toggle inline" id="themeToggleApp" onclick="toggleTheme()" title="Toggle Dark Mode">
+                    <button type="button" class="theme-toggle inline" id="themeToggleApp" onclick="toggleTheme()" title="Toggle Dark Mode">
                         <div class="toggle-track">
                             <span class="toggle-icon sun">☀️</span>
                             <span class="toggle-icon moon">🌙</span>
-                            <div class="toggle-thumb"></button>
+                            <div class="toggle-thumb"></div>
                         </div>
                     </button>
                     <div class="user-info">
@@ -115,24 +115,24 @@
             <!-- Contribution Graph -->
             <div class="graph-section">
                 <h2 class="graph-title">📊 Your Activity This Year</h2>
-                <div class="contribution-graph" id="contributionGraph"></button>
+                <div class="contribution-graph" id="contributionGraph"></div>
                 <div class="legend">
                     <span class="legend-label">Less</span>
-                    <div class="legend-item"><div class="legend-box" style="background: rgba(255,255,255,0.15);"></button></div>
-                    <div class="legend-item"><div class="legend-box" style="background: #86efac; opacity: 0.4;"></button></div>
-                    <div class="legend-item"><div class="legend-box" style="background: #86efac; opacity: 0.7;"></button></div>
-                    <div class="legend-item"><div class="legend-box" style="background: #0d8659;"></button></div>
-                    <div class="legend-item"><div class="legend-box" style="background: #ef4444;"></button></div>
+                    <div class="legend-item"><div class="legend-box" style="background: rgba(255,255,255,0.15);"></div></div>
+                    <div class="legend-item"><div class="legend-box" style="background: #86efac; opacity: 0.4;"></div></div>
+                    <div class="legend-item"><div class="legend-box" style="background: #86efac; opacity: 0.7;"></div></div>
+                    <div class="legend-item"><div class="legend-box" style="background: #0d8659;"></div></div>
+                    <div class="legend-item"><div class="legend-box" style="background: #ef4444;"></div></div>
                     <span class="legend-label">More / No Tasks</span>
                 </div>
             </div>
 
             <!-- Task Sections -->
-            <div class="sections-container" id="sectionsContainer"></button>
+            <div class="sections-container" id="sectionsContainer"></div>
 
             <!-- Add Section Button -->
             <div style="display: flex; justify-content: center; margin-bottom: 60px;">
-                <button type="button" class="add-section-btn" onclick="openAddSectionModal()" style="width: 300px; max-width: 100%;">
+                <button type="button" class="add-section-btn" onclick="openAddSectionModal()">
                     ➕ Add New Section
                 </button>
             </div>
@@ -140,14 +140,14 @@
 
         <!-- Footer -->
         <footer>
-            <p> Made by ❤️ Rajyavardhan</p>
-            <p style="margin-top: 10px; font-size: 0.9rem;">Your data is saved locally in your browser and never shared</p>
+            <p>Made by ❤️ Rajyavardhan</p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">Your data is saved securely in our database</p>
         </footer>
     </div>
 
     <!-- Add Section Modal -->
     <div class="custom-modal" id="addSectionModal">
-        <div class="modal-overlay" onclick="closeAddSectionModal()"></button>
+        <div class="modal-overlay" onclick="closeAddSectionModal()"></div>
         <div class="modal-popup">
             <div class="modal-header">
                 <h3 class="modal-title">✨ Create New Section</h3>
@@ -185,21 +185,25 @@
 
     <!-- Alert/Confirm Modal -->
     <div class="custom-modal" id="alertModal">
-        <div class="modal-overlay" onclick="closeAlert()"></button>
+        <div class="modal-overlay" onclick="closeAlert()"></div>
         <div class="alert-popup">
             <div class="alert-content">
                 <p id="alertMessage"></p>
             </div>
             <div class="alert-actions">
                 <button type="button" class="alert-btn" id="alertConfirmBtn" onclick="confirmAlert()">OK</button>
-                <button class="alert-btn alert-btn-cancel" id="alertCancelBtn" style="display: none;" onclick="closeAlert()">Cancel</button>
+                <button type="button" class="alert-btn alert-btn-cancel" id="alertCancelBtn" style="display: none;" onclick="closeAlert()">Cancel</button>
             </div>
         </div>
     </div>
 
-    <!-- PocketBase Integration Bridge -->
-    <script type="module" src="pocketbase-bridge.js"></script>
+    <!-- Loading Spinner -->
+    <div class="loading-spinner" id="loadingSpinner">
+        <div class="spinner"></div>
+        <p id="loadingText">Processing...</p>
+    </div>
+
     <!-- Main App Script -->
-    <script src="script.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
