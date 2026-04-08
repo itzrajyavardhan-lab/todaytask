@@ -37,7 +37,7 @@
                     <input type="password" id="signupPassword" placeholder="Create a strong password (min 4 chars)" autocomplete="off" required>
                 </div>
                 <div class="error-msg" id="signupError"></div>
-                <button type="submit" class="liquid-btn" id="signupBtn">SIGN UP</button>
+                <button type="submit" class="liquid-btn">SIGN UP</button>
                 <div class="toggle-form">
                     Already have an account? <a href="#" onclick="toggleForm(); return false;">Sign In</a>
                 </div>
@@ -54,7 +54,7 @@
                     <input type="password" id="signinPassword" placeholder="Enter your password" autocomplete="off" required>
                 </div>
                 <div class="error-msg" id="signinError"></div>
-                <button type="submit" class="liquid-btn" id="signinBtn">SIGN IN</button>
+                <button type="submit" class="liquid-btn">SIGN IN</button>
                 <div class="toggle-form">
                     Don't have an account? <a href="#" onclick="toggleForm(); return false;">Sign Up</a>
                 </div>
@@ -62,7 +62,7 @@
 
             <!-- DB Info Note -->
             <div class="db-info">
-                🔒 Your data is securely saved in our database
+                🔒 Data saved in your browser's localStorage — private & local
             </div>
         </div>
     </div>
@@ -86,7 +86,10 @@
                     </button>
                     <div class="user-info">
                         <div class="user-avatar" id="userAvatar">U</div>
-                        <span class="user-name" id="displayUserName">User</span>
+                        <div class="user-details">
+                            <span class="user-name" id="displayUserName">User</span>
+                            <span class="user-id" id="userId">ID: 000</span>
+                        </div>
                         <button type="button" class="logout-btn" onclick="handleLogout()">🚪 Logout</button>
                     </div>
                 </div>
@@ -141,7 +144,7 @@
         <!-- Footer -->
         <footer>
             <p>Made by ❤️ Rajyavardhan</p>
-            <p style="margin-top: 10px; font-size: 0.9rem;">Your data is saved securely in our database</p>
+            <p style="margin-top: 10px; font-size: 0.9rem;">Your data is saved locally in your browser</p>
         </footer>
     </div>
 
@@ -197,13 +200,7 @@
         </div>
     </div>
 
-    <!-- Loading Spinner -->
-    <div class="loading-spinner" id="loadingSpinner">
-        <div class="spinner"></div>
-        <p id="loadingText">Processing...</p>
-    </div>
-
     <!-- Main App Script -->
-    <script src="app.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
