@@ -9,6 +9,14 @@ let users = {};
 function applyTheme(theme) {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('todayTaskTheme', theme);
+    
+    // Trigger animation on all toggle buttons
+    document.querySelectorAll('.theme-toggle').forEach(btn => {
+        btn.style.animation = 'none';
+        setTimeout(() => {
+            btn.style.animation = 'toggleSpin 0.6s ease';
+        }, 10);
+    });
 }
 
 function toggleTheme() {
@@ -117,6 +125,7 @@ function handleSignup(e) {
             default3: { name: 'Work', icon: '💼', tasks: [] }
         },
         sections: ['default1', 'default2', 'default3'],
+        taskStats: {}, // Track tasks by date
         createdAt: new Date().toISOString()
     };
 
@@ -285,6 +294,10 @@ function addTask(e, sectionId) {
             return;
         }
 
+        const today = new Date().toISOString().split('T')[0];
+        userData.taskStats = userData.taskStats || {};
+        userData.taskStats[today] = (userData.taskStats[today] || 0) + 1;
+
         userData.tasks[sectionId].tasks.push({
             text,
             completed: false,
@@ -304,7 +317,17 @@ function toggleTask(sectionId, taskId) {
     try {
         const userData = users[currentUser];
         if (userData && userData.tasks[sectionId] && userData.tasks[sectionId].tasks[taskId]) {
-            userData.tasks[sectionId].tasks[taskId].completed = !userData.tasks[sectionId].tasks[taskId].completed;
+            const task = userData.tasks[sectionId].tasks[taskId];
+            task.completed = !task.completed;
+
+            const today = new Date().toISOString().split('T')[0];
+            userData.taskStats = userData.taskStats || {};
+            if (task.completed) {
+                userData.taskStats[today] = (userData.taskStats[today] || 0) + 1;
+            } else if (userData.taskStats[today]) {
+                userData.taskStats[today] = Math.max(0, userData.taskStats[today] - 1);
+            }
+
             localStorage.setItem('todayTaskUsers', JSON.stringify(users));
             renderAll();
             generateContributionGraph();
@@ -356,7 +379,11 @@ function updateStats() {
 
 function generateContributionGraph() {
     try {
+        const userData = users[currentUser];
+        if (!userData) return;
+
         const today = new Date();
+        const taskStats = userData.taskStats || {};
         let html = '';
 
         for (let i = 365; i >= 0; i--) {
@@ -364,9 +391,16 @@ function generateContributionGraph() {
             date.setDate(date.getDate() - i);
 
             const dateStr = date.toISOString().split('T')[0];
-            const color = 'rgba(134, 239, 172, 0.3)';
+            const count = taskStats[dateStr] || 0;
+            
+            // Determine color level based on tasks done
+            let level = 'level-0';
+            if (count > 0) level = 'level-1';
+            if (count > 2) level = 'level-2';
+            if (count > 4) level = 'level-3';
+            if (count > 6) level = 'level-4';
 
-            html += `<div class="graph-box" style="background: ${color};" title="${dateStr}"></div>`;
+            html += `<div class="graph-box ${level}" title="${dateStr}: ${count} tasks"></div>`;
         }
 
         document.getElementById('contributionGraph').innerHTML = html;
