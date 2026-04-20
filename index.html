@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StudyLens — Task Tracker</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<script src="script.js"></script>
+</head>
+<body>
+<div class="orb orb1"></div><div class="orb orb2"></div><div class="orb orb3"></div>
+<div class="app">
+
+<!-- Header -->
+<header>
+  <div class="logo">Study<span>Lens</span></div>
+  <div class="header-right">
+    <div class="username-badge" id="userBadge" onclick="openSettings()">👤 <span id="usernameDisplay">Student</span></div>
+    <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle"><span id="themeIcon">🌙</span><span id="themeLabel">Dark</span></button>
+    <button class="btn-glass btn-blue btn-sm" onclick="openSettings()">⚙ Settings</button>
+  </div>
+</header>
+
+<!-- Streak + Quote -->
+<div style="display:flex;gap:14px;margin-bottom:18px;flex-wrap:wrap;align-items:center;">
+  <div class="streak-bar">🔥 Streak: <span class="streak-num" id="streakNum">0</span> day(s)</div>
+  <div class="quote-box" id="quoteBox"></div>
+</div>
+
+<div class="grid-main">
+<!-- ══ LEFT ══ -->
+<div>
+  <div class="glass-card">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px;">
+      <div>
+        <div style="font-family:'Syne',sans-serif;font-size:1.2rem;font-weight:700;">My Tasks</div>
+        <div class="date-chip" id="todayDate" style="margin-top:6px;"></div>
+      </div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap;">
+        <button class="btn-glass btn-gold btn-sm" onclick="exportTasks()">↓ Export</button>
+        <button class="btn-glass btn-danger btn-sm" onclick="clearDone()">✕ Clear Done</button>
+      </div>
+    </div>
+
+    <div class="tabs">
+      <button class="btn-glass btn-math tab-btn active" id="tab-math" onclick="switchTab('math')">∑ Maths</button>
+      <button class="btn-glass btn-phy tab-btn"  id="tab-phy"  onclick="switchTab('phy')">⚛ Physics</button>
+      <button class="btn-glass btn-chem tab-btn" id="tab-chem" onclick="switchTab('chem')">⚗ Chemistry</button>
+    </div>
+
+    <!-- Math -->
+    <div class="subject-panel active" id="panel-math">
+      <div class="subject-label"><span class="dot" style="background:var(--math);color:var(--math);"></span><span class="mc">Mathematics</span></div>
+      <div class="stats-row" id="stats-math"></div>
+      <div class="task-input-row">
+        <input type="text" id="input-math" placeholder="Add maths task…" onkeydown="if(event.key==='Enter')addTask('math')">
+        <select class="sel" id="pri-math"><option value="none">Priority</option><option value="high">🔴 High</option><option value="mid">🟡 Mid</option><option value="low">🟢 Low</option></select>
+        <input type="date" class="date-inp" id="due-math" title="Due date">
+        <button class="btn-glass btn-math btn-sm" onclick="addTask('math')">+ Add</button>
+      </div>
+      <div class="search-filter-row">
+        <div class="search-wrap"><span class="si">🔍</span><input id="search-math" placeholder="Search…" oninput="renderSubject('math')"></div>
+        <select class="sel" id="filter-math" onchange="renderSubject('math')"><option value="all">All</option><option value="pending">Pending</option><option value="done">Done</option><option value="high">High Priority</option></select>
+      </div>
+      <ul class="task-list" id="list-math"></ul>
+    </div>
+
+    <!-- Physics -->
+    <div class="subject-panel" id="panel-phy">
+      <div class="subject-label"><span class="dot" style="background:var(--phy);color:var(--phy);"></span><span class="pc">Physics</span></div>
+      <div class="stats-row" id="stats-phy"></div>
+      <div class="task-input-row">
+        <input type="text" id="input-phy" placeholder="Add physics task…" onkeydown="if(event.key==='Enter')addTask('phy')">
+        <select class="sel" id="pri-phy"><option value="none">Priority</option><option value="high">🔴 High</option><option value="mid">🟡 Mid</option><option value="low">🟢 Low</option></select>
+        <input type="date" class="date-inp" id="due-phy" title="Due date">
+        <button class="btn-glass btn-phy btn-sm" onclick="addTask('phy')">+ Add</button>
+      </div>
+      <div class="search-filter-row">
+        <div class="search-wrap"><span class="si">🔍</span><input id="search-phy" placeholder="Search…" oninput="renderSubject('phy')"></div>
+        <select class="sel" id="filter-phy" onchange="renderSubject('phy')"><option value="all">All</option><option value="pending">Pending</option><option value="done">Done</option><option value="high">High Priority</option></select>
+      </div>
+      <ul class="task-list" id="list-phy"></ul>
+    </div>
+
+    <!-- Chemistry -->
+    <div class="subject-panel" id="panel-chem">
+      <div class="subject-label"><span class="dot" style="background:var(--chem);color:var(--chem);"></span><span class="cc">Chemistry</span></div>
+      <div class="stats-row" id="stats-chem"></div>
+      <div class="task-input-row">
+        <input type="text" id="input-chem" placeholder="Add chemistry task…" onkeydown="if(event.key==='Enter')addTask('chem')">
+        <select class="sel" id="pri-chem"><option value="none">Priority</option><option value="high">🔴 High</option><option value="mid">🟡 Mid</option><option value="low">🟢 Low</option></select>
+        <input type="date" class="date-inp" id="due-chem" title="Due date">
+        <button class="btn-glass btn-chem btn-sm" onclick="addTask('chem')">+ Add</button>
+      </div>
+      <div class="search-filter-row">
+        <div class="search-wrap"><span class="si">🔍</span><input id="search-chem" placeholder="Search…" oninput="renderSubject('chem')"></div>
+        <select class="sel" id="filter-chem" onchange="renderSubject('chem')"><option value="all">All</option><option value="pending">Pending</option><option value="done">Done</option><option value="high">High Priority</option></select>
+      </div>
+      <ul class="task-list" id="list-chem"></ul>
+    </div>
+  </div>
+
+  <!-- Notes -->
+  <div class="glass-card" style="margin-top:18px;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+      <div class="sec-title" style="margin-bottom:0;">📝 Quick Notes</div>
+      <button class="btn-glass btn-blue btn-sm" onclick="saveNotes()">Save</button>
+    </div>
+    <textarea class="notes-area" id="notesArea" placeholder="Jot down formulas, reminders, important concepts…"></textarea>
+  </div>
+</div>
+
+<!-- ══ RIGHT ══ -->
+<div class="right-col">
+
+  <!-- Score ring -->
+  <div class="glass-card" style="text-align:center;">
+    <div class="sec-title" style="margin-bottom:12px;">Overall Completion</div>
+    <div style="display:flex;align-items:center;justify-content:center;gap:18px;flex-wrap:wrap;">
+      <div class="ring-wrap">
+        <svg width="108" height="108" viewBox="0 0 108 108">
+          <circle cx="54" cy="54" r="43" fill="none" stroke="rgba(255,255,255,0.08)" stroke-width="10"/>
+          <circle id="ringCircle" cx="54" cy="54" r="43" fill="none" stroke="url(#rg)" stroke-width="10" stroke-linecap="round" stroke-dasharray="270.2" stroke-dashoffset="270.2" style="transition:stroke-dashoffset 0.8s cubic-bezier(.4,0,.2,1);"/>
+          <defs><linearGradient id="rg" x1="0%" y1="0%" x2="100%" y2="0%"><stop offset="0%" stop-color="#60c8ff"/><stop offset="100%" stop-color="#38e8d8"/></linearGradient></defs>
+        </svg>
+        <div class="ring-center"><div class="score-big" id="overallScore">0%</div></div>
+      </div>
+      <div style="text-align:left;">
+        <div class="score-label" style="margin-bottom:12px;">tasks completed</div>
+        <div class="bar-chart" id="barChart"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Right panel -->
+  <div class="glass-card">
+    <div class="r-tabs">
+      <div class="r-tab active" onclick="switchRTab('pie')">📊 Chart</div>
+      <div class="r-tab" onclick="switchRTab('timer')">⏱ Focus</div>
+      <div class="r-tab" onclick="switchRTab('heatmap')">📅 Activity</div>
+      <div class="r-tab" onclick="switchRTab('log')">💾 Log</div>
+    </div>
+
+    <div class="r-panel active" id="rpanel-pie">
+      <div class="sec-title">Completion Breakdown</div>
+      <div style="display:flex;flex-direction:column;align-items:center;gap:14px;">
+        <canvas id="pieChart" width="155" height="155" style="filter:drop-shadow(0 4px 18px rgba(0,0,0,0.35));"></canvas>
+        <div class="legend" id="legend"></div>
+      </div>
+    </div>
+
+    <div class="r-panel" id="rpanel-timer">
+      <div class="sec-title">Pomodoro Focus Timer</div>
+      <div class="timer-modes">
+        <button class="btn-glass btn-blue btn-sm" onclick="setTimerMode(25,'Work')">25m Work</button>
+        <button class="btn-glass btn-green btn-sm" onclick="setTimerMode(5,'Short Break')">5m Break</button>
+        <button class="btn-glass btn-gold btn-sm" onclick="setTimerMode(15,'Long Break')">15m Break</button>
+      </div>
+      <div class="timer-label" id="timerModeLabel">Work Session</div>
+      <div class="timer-display" id="timerDisplay">25:00</div>
+      <div class="timer-controls">
+        <button class="btn-glass btn-green btn-sm" id="btnStart" onclick="startTimer()">▶ Start</button>
+        <button class="btn-glass btn-danger btn-sm" id="btnPause" style="display:none;" onclick="pauseTimer()">⏸ Pause</button>
+        <button class="btn-glass btn-neutral btn-sm" onclick="resetTimer()">↺ Reset</button>
+      </div>
+      <div style="margin-top:14px;text-align:center;">
+        <div style="font-size:11.5px;color:var(--text-muted);">Sessions today</div>
+        <div style="font-family:'Syne',sans-serif;font-size:1.5rem;font-weight:800;color:var(--math);" id="sessionCount">0</div>
+      </div>
+    </div>
+
+    <div class="r-panel" id="rpanel-heatmap">
+      <div class="sec-title">30-Day Activity</div>
+      <div class="heatmap-wrap" id="heatmap"></div>
+      <div style="display:flex;gap:5px;align-items:center;margin-top:10px;">
+        <span style="font-size:11px;color:var(--text-muted);">Less</span>
+        <div class="hm-cell" style="width:12px;height:12px;"></div>
+        <div class="hm-cell l1" style="width:12px;height:12px;"></div>
+        <div class="hm-cell l2" style="width:12px;height:12px;"></div>
+        <div class="hm-cell l3" style="width:12px;height:12px;"></div>
+        <span style="font-size:11px;color:var(--text-muted);">More</span>
+      </div>
+    </div>
+
+    <div class="r-panel" id="rpanel-log">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:10px;">
+        <div class="sec-title" style="margin-bottom:0;">Daily Progress Log</div>
+        <button class="btn-glass btn-blue btn-sm" onclick="saveProgress()">💾 Save Today</button>
+      </div>
+      <div class="daily-log" id="dailyLog"><div class="empty-state">No entries yet.</div></div>
+    </div>
+  </div>
+
+</div><!-- end right-col -->
+</div><!-- end grid-main -->
+</div><!-- end app -->
+
+<!-- Settings Modal -->
+<div class="modal-overlay" id="settingsModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeSettings()">✕</button>
+    <h3>⚙ Settings</h3>
+    <label>Your Name</label>
+    <input type="text" id="usernameInput" placeholder="Enter your name…">
+    <hr class="hr">
+    <label>Glass Transparency <span class="range-val" id="transVal">13%</span></label>
+    <div class="slider-row">
+      <span style="font-size:11.5px;color:var(--text-muted);">Clear</span>
+      <input type="range" id="transSlider" min="5" max="50" value="13" oninput="previewTrans(this.value)">
+      <span style="font-size:11.5px;color:var(--text-muted);">Frosted</span>
+    </div>
+    <label>Blur Intensity <span class="range-val" id="blurVal">22px</span></label>
+    <div class="slider-row">
+      <span style="font-size:11.5px;color:var(--text-muted);">Sharp</span>
+      <input type="range" id="blurSlider" min="4" max="52" value="22" oninput="previewBlur(this.value)">
+      <span style="font-size:11.5px;color:var(--text-muted);">Blurry</span>
+    </div>
+    <hr class="hr">
+    <label>Theme</label>
+    <div style="display:flex;gap:8px;margin-bottom:14px;">
+      <button class="btn-glass btn-sm" style="flex:1;" onclick="setTheme('dark')">🌙 Dark</button>
+      <button class="btn-glass btn-sm" style="flex:1;" onclick="setTheme('light')">☀ Light</button>
+    </div>
+    <div class="modal-footer">
+      <button class="btn-glass btn-neutral btn-sm" onclick="closeSettings()">Cancel</button>
+      <button class="btn-glass btn-math btn-sm" onclick="saveSettings()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Task Modal -->
+<div class="modal-overlay" id="editModal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeEdit()">✕</button>
+    <h3>✏ Edit Task</h3>
+    <label>Task Text</label>
+    <input type="text" id="editText" placeholder="Task description…">
+    <label>Priority</label>
+    <select id="editPriority"><option value="none">— None</option><option value="high">🔴 High</option><option value="mid">🟡 Medium</option><option value="low">🟢 Low</option></select>
+    <label>Due Date</label>
+    <input type="date" id="editDue">
+    <div class="modal-footer">
+      <button class="btn-glass btn-neutral btn-sm" onclick="closeEdit()">Cancel</button>
+      <button class="btn-glass btn-math btn-sm" onclick="saveEdit()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+</body>
+</html>
